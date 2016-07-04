@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:layout_marginTop="10dp"
+              android:background="@color/gray"
+              android:orientation="vertical"
+    >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:background="@color/white"
+                  android:orientation="vertical"
+        >
+
+        <com.app.sample.chatting.widget.ClearEditText
+            android:id="@+id/login_username"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="5.0dip"
+            android:background="@color/white"
+            android:hint="用户名/邮箱"
+            android:singleLine="true"
+            android:textColor="#ff555555"
+            android:textColorHint="#ff888888"
+            android:textSize="16.0sp"
+            />
+
+        <!--分割线-->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/gray"
+            />
+
+        <com.app.sample.chatting.widget.ClearEditText
+            android:id="@+id/login_password"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/white"
+            android:hint="密码"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:textColor="#ff555555"
+            android:textColorHint="#ff888888"
+            android:textSize="16.0sp"/>
+    </LinearLayout>
+
+       <Button
+        android:id="@+id/login_submit"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginTop="15.0dip"
+        android:background="@drawable/selector_login_submit_btn"
+        android:gravity="center"
+        android:text="登录"
+        android:textColor="@color/white"
+        android:textSize="25sp"/>
+
+
+    <TextView
+        android:id="@+id/login_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:text="忘记密码?"
+
+        android:textSize="18sp"
+        />
+
+
+</LinearLayout>

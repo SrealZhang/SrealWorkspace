@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <color name="colorPrimary">#00A1EA</color>
+    <color name="colorPrimaryDark">#00A1EA</color>
+    <color name="colorPrimaryLight">#FFE0B2</color>
+
+    <color name="colorAccent">#4FA7B5</color>
+    <color name="colorAccentDark">#2F8B99</color>
+    <color name="colorAccentLight">#6EC0CC</color>
+    <color name="textColorSecondary">@color/grey_hard</color>
+
+    <color name="backGroundPrimary">@color/background_material_light</color>
+
+    <color name="dialogContentColor">#767676</color>
+
+    <color name="cardFeaturedContent">#E0E0E0</color>
+
+    <color name="notif_color">#F58634</color>
+
+    <color name="grey_hard">#96989A</color>
+    <color name="grey_medium">#BDBFC1</color>
+    <color name="grey_soft">#F5F5F5</color>
+
+    <color name="grey_bg">#EBEFF0</color>
+    <color name="grey_text">#222D31</color>
+    <color name="me_chat_bg">#FFE0B2</color>
+
+    <!--登录-->
+    <color name="white">#ffffffff</color>
+    <color name="red">#ef0d0d</color>
+    <color name="gray">#e9e9e9</color>
+    <color name="black">#070707</color>
+    <color name="head_bg">#0799ed</color>
+    <color name="head_tv_pressed">#2689c2</color>
+    <color name="head_tv_normal">#0799ed</color>
+    <color name="login_btn">#0799ed</color>
+    <color name="login_btn_pressed">#2689c2</color>
+
+
+</resources>
