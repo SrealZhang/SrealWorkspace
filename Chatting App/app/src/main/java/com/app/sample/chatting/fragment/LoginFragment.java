@@ -1,6 +1,7 @@
 package com.app.sample.chatting.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -65,6 +66,8 @@ public class LoginFragment extends Fragment {
         ButterKnife.bind(this, view);
         init();
         ButterKnife.bind(this, view);
+//        edtAccount.setText("test001");
+//        edtPassword.setText("111");
         return view;
     }
 

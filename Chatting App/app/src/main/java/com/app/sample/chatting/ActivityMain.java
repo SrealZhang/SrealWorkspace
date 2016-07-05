@@ -1,5 +1,7 @@
 package com.app.sample.chatting;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +32,7 @@ import com.app.sample.chatting.fragment.FragmentAdapter;
 import com.app.sample.chatting.fragment.FriendsFragment;
 import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
+import com.app.sample.chatting.service.IMContactServiceHelper;
 
 public class ActivityMain extends BaseActivity {
 
@@ -84,6 +88,9 @@ public class ActivityMain extends BaseActivity {
                         break;
                     case 2:
                         Snackbar.make(parent_view, "Add Group Clicked", Snackbar.LENGTH_SHORT).show();
+                        break;
+                    case 3:
+                        Snackbar.make(parent_view, "Add Neo Clicked", Snackbar.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -228,9 +235,15 @@ public class ActivityMain extends BaseActivity {
                         //在这里执行点击Sub item 1执行相应的逻辑
                         Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
-                    case "Sub item 2":
-                        //在这里执行点击Sub item 2执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                    case "Logout":
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMain.this);
+                        builder.setTitle("Warn").setMessage("确定要退出").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                IMContactServiceHelper.getmInstance().disconnect(ActivityMain.this);
+                                startActivity(new Intent(ActivityMain.this, ActivityLogin.class));
+                            }
+                        }).setNegativeButton("取消",null).setCancelable(true).create().show();
                         break;
 
                 }

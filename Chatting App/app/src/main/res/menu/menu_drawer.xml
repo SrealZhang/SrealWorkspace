@@ -31,7 +31,7 @@
                 android:title="Sub item 1" />
             <item
                 android:icon="@drawable/ic_forum"
-                android:title="Sub item 2" />
+                android:title="Logout" />
         </menu>
     </item>
 
