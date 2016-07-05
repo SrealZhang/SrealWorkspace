@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -11,8 +10,6 @@ android {
         targetSdkVersion 23
         versionCode 5
         versionName "2.0"
-
-
     }
     buildTypes {
         release {
@@ -52,8 +49,10 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.balysv:material-ripple:1.0.2'
+    //xmpp smack
     compile 'org.igniterealtime.smack:smack-android-extensions:4.1.7'
     compile 'org.igniterealtime.smack:smack-tcp:4.1.7'
+    compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
 }

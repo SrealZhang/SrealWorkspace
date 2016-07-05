@@ -32,7 +32,7 @@ import com.app.sample.chatting.model.Friend;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityChatDetails extends AppCompatActivity {
+public class ActivityChatDetails extends BaseActivity {
     public static String KEY_FRIEND     = "com.app.sample.chatting.FRIEND";
     public static String KEY_SNIPPET   = "com.app.sample.chatting.SNIPPET";
 

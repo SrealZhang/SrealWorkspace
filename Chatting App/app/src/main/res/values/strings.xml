@@ -39,6 +39,7 @@
     <string name="fragment_register_tv">这是一个注册界面</string>
     <string name="fragment_register_btn">切换登录</string>
 
-
+    <string name="forget_password">忘记密码?</string>
+    <string name="register">注册</string>
 
 </resources>

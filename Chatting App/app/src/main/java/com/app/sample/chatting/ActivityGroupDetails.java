@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ActivityGroupDetails extends AppCompatActivity {
+public class ActivityGroupDetails extends BaseActivity {
     public static String KEY_GROUP = "com.app.sample.chatting.GROUP";
 
     // give preparation animation activity transition

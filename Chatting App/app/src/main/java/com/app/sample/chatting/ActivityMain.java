@@ -30,7 +30,7 @@ import com.app.sample.chatting.fragment.FriendsFragment;
 import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
 
-public class ActivityMain extends AppCompatActivity {
+public class ActivityMain extends BaseActivity {
 
 
     private ActionBarDrawerToggle mDrawerToggle;

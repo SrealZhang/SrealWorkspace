@@ -1,46 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.app.sample.chatting" >
+    package="com.app.sample.chatting">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".ActivitySplash" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".ActivitySplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActivityMain" >
-        </activity>
+
+        <activity android:name=".ActivityMain" />
         <activity
             android:name=".ActivityChatDetails"
-            android:label="List" >
-        </activity>
+            android:label="List" />
         <activity
             android:name=".ActivitySelectFriend"
-            android:label="Select Friend" >
-        </activity>
-        <activity android:name=".ActivityFriendDetails"
-            android:label="Friend Details" >
-        </activity>
-        <activity android:name=".ActivityGroupDetails"
-            android:label="Group Details" >
-        </activity>
+            android:label="Select Friend" />
+        <activity
+            android:name=".ActivityFriendDetails"
+            android:label="Friend Details" />
+        <activity
+            android:name=".ActivityGroupDetails"
+            android:label="Group Details" />
         <!--登录-->
-     <activity android:name=".ActivityLogin"/>
-        
-        
-        
+        <activity android:name=".ActivityLogin" />
+
+        <service
+            android:name=".service.XMPPConnectionService"
+            android:exported="false" />
     </application>
 
 </manifest>

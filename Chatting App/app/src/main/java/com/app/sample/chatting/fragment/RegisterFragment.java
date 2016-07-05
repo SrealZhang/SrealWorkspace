@@ -3,6 +3,7 @@ package com.app.sample.chatting.fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,9 @@ import com.app.sample.chatting.util.Ereg;
  * author:  赖创文
  * date:   2016/3/2 15:46
  */
-public class RegisterFragment extends android.support.v4.app.Fragment implements View.OnClickListener,TextWatcher{
+public class RegisterFragment extends android.support.v4.app.Fragment implements View.OnClickListener, TextWatcher {
     private ImageButton register_head_iv;
-    private TextView register_head_tv1, register_head_tv2;
+    private TextView register_head_tv1;
     private Button register_submit;//注册提交按钮
     private EditText register_username, register_password1, register_password2;//输入用户名，密码，确定密码
     private Ereg ereg = new Ereg();//正则表达式工具类
@@ -38,12 +39,12 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
 
     /**
      * 查找控件
+     *
      * @param view
      */
     private void findViewById(View view) {
-        register_head_iv= (ImageButton) view.findViewById(R.id.head_iv);
+        register_head_iv = (ImageButton) view.findViewById(R.id.head_iv);
         register_head_tv1 = (TextView) view.findViewById(R.id.head_tv1);
-        register_head_tv2 = (TextView) view.findViewById(R.id.head_tv2);
         register_submit = (Button) view.findViewById(R.id.register_submit);
         register_username = (EditText) view.findViewById(R.id.register_username);
         register_password1 = (EditText) view.findViewById(R.id.register_password1);
@@ -64,12 +65,10 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
      */
     private void setListener() {
         register_head_iv.setOnClickListener(this);
-        register_head_tv2.setOnClickListener(this);
         register_submit.setOnClickListener(this);
         register_username.addTextChangedListener(this);
         register_password1.addTextChangedListener(this);
         register_password2.addTextChangedListener(this);
-
 
 
     }
@@ -79,21 +78,18 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
      */
     private void init() {
         register_head_tv1.setText("注册");//改变标题
-        register_head_tv2.setText("登录");//改变标题
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.head_tv2:
-                ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
-                break;
             case R.id.register_submit:
-
-
                 break;
             case R.id.head_iv:
-               getActivity().finish();//结束
+                ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
+                ((ActivityLogin) getActivity()).isRegist = false;
+                break;
+            default:
                 break;
         }
 
@@ -142,6 +138,5 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
     public void afterTextChanged(Editable s) {
 
     }
-
 
 }

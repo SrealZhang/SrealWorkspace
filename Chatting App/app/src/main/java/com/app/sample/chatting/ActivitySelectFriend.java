@@ -19,7 +19,7 @@ import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.widget.DividerItemDecoration;
 
-public class ActivitySelectFriend extends AppCompatActivity {
+public class ActivitySelectFriend extends BaseActivity {
 
     private ActionBar actionBar;
     private RecyclerView recyclerView;

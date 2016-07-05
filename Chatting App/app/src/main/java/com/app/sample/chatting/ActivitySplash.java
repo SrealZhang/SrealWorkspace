@@ -16,7 +16,7 @@ import com.app.sample.chatting.data.Tools;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ActivitySplash extends AppCompatActivity {
+public class ActivitySplash extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,14 +26,14 @@ public class ActivitySplash extends AppCompatActivity {
             @Override
             public void run() {
                 // go to the main activity
-                Intent i = new Intent(ActivitySplash.this, ActivityMain.class);
+                Intent i = new Intent(ActivitySplash.this, ActivityLogin.class);
                 startActivity(i);
                 // kill current activity
                 finish();
             }
         };
         // Show splash screen for 3 seconds
-        new Timer().schedule(task, 3000);
+        new Timer().schedule(task, 1000);
 
         // for system bar in lollipop
         Tools.systemBarLolipop(this);

@@ -2,11 +2,10 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@color/white"
+    android:orientation="horizontal">
 
 
     <ImageButton
@@ -14,10 +13,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@drawable/selector_pressed_bg"
-        android:src="@mipmap/head_back"
-
-
-        />
+        android:src="@mipmap/head_back" />
 
     <TextView
         android:id="@+id/head_tv1"
@@ -27,27 +23,13 @@
         android:layout_centerVertical="true"
         android:text="登录"
         android:textColor="@color/black"
-        android:textSize="23sp"/>
-
-    <TextView
-        android:id="@+id/head_tv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/head_tv1"
-        android:layout_marginRight="15dp"
-        android:text="注册"
-        android:textColor="@drawable/text_color"
-        android:textSize="23sp"
-        />
+        android:textSize="23sp" />
 
     <!--分割线-->
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/head_bg"
-        />
+        android:background="@color/head_bg" />
 
 </RelativeLayout>

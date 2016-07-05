@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 import com.app.sample.chatting.model.Friend;
 
-public class ActivityFriendDetails extends AppCompatActivity {
+public class ActivityFriendDetails extends BaseActivity {
 
     public static final String EXTRA_OBJCT = "com.app.sample.chatting";
 

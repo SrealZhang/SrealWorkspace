@@ -20,12 +20,27 @@ import java.util.Locale;
 
 public class Constant {
 
+    public static String USERNAME = "未知";// 账户
+    public static String PASSWORD = "null";// 密码
+    public static final String XMPP_HOST = "192.168.0.6";// 主机地址
+    public static final int XMPP_PORT = 5222;// 端口
+    public static final String XMPP_SEIVICE_NAME = "192.168.0.6";// 服务器名称
 
-    public static Resources getStrRes(Context context){
+    public static final int UPFILE_ING = 1;
+    public static final int UPFILE_SUCCES = 2;
+    public static final int UPFILE_ERROR = 3;
+
+    public static String getMyOpenfireId() {
+        return USERNAME + "@" + XMPP_SEIVICE_NAME;
+    }
+
+    public static Resources getStrRes(Context context) {
         return context.getResources();
     }
 
-    public static String formatTime(long time){
+
+
+    public static String formatTime(long time) {
         // income time
         Calendar date = Calendar.getInstance();
         date.setTimeInMillis(time);
@@ -35,15 +50,13 @@ public class Constant {
         curDate.setTimeInMillis(System.currentTimeMillis());
 
         SimpleDateFormat dateFormat = null;
-        if(date.get(Calendar.YEAR)==curDate.get(Calendar.YEAR)){
-            if(date.get(Calendar.DAY_OF_YEAR) == curDate.get(Calendar.DAY_OF_YEAR) ){
+        if (date.get(Calendar.YEAR) == curDate.get(Calendar.YEAR)) {
+            if (date.get(Calendar.DAY_OF_YEAR) == curDate.get(Calendar.DAY_OF_YEAR)) {
                 dateFormat = new SimpleDateFormat("h:mm a", Locale.US);
-            }
-            else{
+            } else {
                 dateFormat = new SimpleDateFormat("MMM d", Locale.US);
             }
-        }
-        else{
+        } else {
             dateFormat = new SimpleDateFormat("MMM yyyy", Locale.US);
         }
         return dateFormat.format(time);
@@ -64,7 +77,7 @@ public class Constant {
         return f.floatValue();
     }
 
-    public static List<Friend> getFriendsData(Context ctx)  {
+    public static List<Friend> getFriendsData(Context ctx) {
         List<Friend> items = new ArrayList<>();
         String s_arr[] = ctx.getResources().getStringArray(R.array.people_names);
         TypedArray drw_arr = ctx.getResources().obtainTypedArray(R.array.people_photos);
@@ -75,32 +88,32 @@ public class Constant {
         return items;
     }
 
-    public static List<Chat> getChatsData(Context ctx)  {
+    public static List<Chat> getChatsData(Context ctx) {
         List<Chat> items = new ArrayList<>();
         String s_arr[] = ctx.getResources().getStringArray(R.array.people_names);
         TypedArray drw_arr = ctx.getResources().obtainTypedArray(R.array.people_photos);
         String s_cht[] = ctx.getResources().getStringArray(R.array.chat_snippet);
         String s_date[] = ctx.getResources().getStringArray(R.array.chat_date);
         for (int i = 0; i < 10; i++) {
-            items.add(new Chat(i, s_date[i], true, new Friend(s_arr[i+5], drw_arr.getResourceId(i+5, -1)), s_cht[i]));
+            items.add(new Chat(i, s_date[i], true, new Friend(s_arr[i + 5], drw_arr.getResourceId(i + 5, -1)), s_cht[i]));
         }
         return items;
     }
 
-    public static List<Group> getGroupData(Context ctx)  {
+    public static List<Group> getGroupData(Context ctx) {
         List<Group> items = new ArrayList<>();
         String s_name[] = ctx.getResources().getStringArray(R.array.groups_name);
         String s_date[] = ctx.getResources().getStringArray(R.array.groups_date);
         TypedArray drw_arr = ctx.getResources().obtainTypedArray(R.array.groups_photos);
 
-        items.add(new Group(0, s_date[0], s_name[0], "", drw_arr.getResourceId(0,-1), friendSubList(ctx, 0, 5)));
-        items.add(new Group(1, s_date[1], s_name[1], "", drw_arr.getResourceId(1,-1), friendSubList(ctx, 7, 8)));
-        items.add(new Group(2, s_date[2], s_name[2], "", drw_arr.getResourceId(2,-1), friendSubList(ctx, 6, 14)));
+        items.add(new Group(0, s_date[0], s_name[0], "", drw_arr.getResourceId(0, -1), friendSubList(ctx, 0, 5)));
+        items.add(new Group(1, s_date[1], s_name[1], "", drw_arr.getResourceId(1, -1), friendSubList(ctx, 7, 8)));
+        items.add(new Group(2, s_date[2], s_name[2], "", drw_arr.getResourceId(2, -1), friendSubList(ctx, 6, 14)));
 
         return items;
     }
 
-    private static ArrayList<Friend> friendSubList(Context ctx, int start, int end){
+    private static ArrayList<Friend> friendSubList(Context ctx, int start, int end) {
         ArrayList<Friend> friends = new ArrayList<>();
         friends.addAll(getFriendsData(ctx));
         ArrayList<Friend> friends_ = new ArrayList<>();
@@ -110,7 +123,7 @@ public class Constant {
         return friends_;
     }
 
-    public static List<ChatsDetails> getChatDetailsData(Context ctx, Friend friend)  {
+    public static List<ChatsDetails> getChatDetailsData(Context ctx, Friend friend) {
         List<ChatsDetails> items = new ArrayList<>();
         String s_date[] = ctx.getResources().getStringArray(R.array.chat_details_date);
         String s_content[] = ctx.getResources().getStringArray(R.array.chat_details_content);
@@ -122,7 +135,7 @@ public class Constant {
         return items;
     }
 
-    public static List<GroupDetails> getGroupDetailsData(Context ctx)  {
+    public static List<GroupDetails> getGroupDetailsData(Context ctx) {
         List<GroupDetails> items = new ArrayList<>();
         List<Friend> friends = getFriendsData(ctx);
 
