@@ -16,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +26,11 @@ import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.model.ChatsDetails;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.service.XMPPConnectionService;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.chat.ChatManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,6 +114,13 @@ public class ActivityChatDetails extends BaseActivity {
         btn_send.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+//              聊天
+//              Chat chat= ChatManager.getInstanceFor(XMPPConnectionService.getmConnection()).createChat("yangbin@192.168.0.6");
+//                try {
+//                    chat.sendMessage("");
+//                } catch (SmackException.NotConnectedException e) {
+//                    e.printStackTrace();
+//                }
 
                 items.add(items.size(), new ChatsDetails( items.size(), Constant.formatTime(System.currentTimeMillis()),friend, et_content.getText().toString(), true));
                 items.add(items.size(), new ChatsDetails( items.size(), Constant.formatTime(System.currentTimeMillis()), friend, et_content.getText().toString(), false));
