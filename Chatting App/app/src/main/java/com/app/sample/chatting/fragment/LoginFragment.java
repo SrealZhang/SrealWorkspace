@@ -66,8 +66,8 @@ public class LoginFragment extends Fragment {
         ButterKnife.bind(this, view);
         init();
         ButterKnife.bind(this, view);
-//        edtAccount.setText("test001");
-//        edtPassword.setText("111");
+        edtAccount.setText("test001");
+        edtPassword.setText("111");
         return view;
     }
 

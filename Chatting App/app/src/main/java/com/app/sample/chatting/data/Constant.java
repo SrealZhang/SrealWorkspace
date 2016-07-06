@@ -22,9 +22,9 @@ public class Constant {
 
     public static String USERNAME = "未知";// 账户
     public static String PASSWORD = "null";// 密码
-    public static final String XMPP_HOST = "192.168.0.6";// 主机地址
+    public static final String XMPP_HOST = "192.168.0.11";// 主机地址
     public static final int XMPP_PORT = 5222;// 端口
-    public static final String XMPP_SEIVICE_NAME = "192.168.0.6";// 服务器名称
+    public static final String XMPP_SEIVICE_NAME = "192.168.0.11";// 服务器名称
 
     public static final int UPFILE_ING = 1;
     public static final int UPFILE_SUCCES = 2;
