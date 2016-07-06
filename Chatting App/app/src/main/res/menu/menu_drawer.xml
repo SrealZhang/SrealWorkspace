@@ -17,7 +17,7 @@
         <item
         android:id="@+id/nav_discussion"
         android:icon="@drawable/ic_forum"
-        android:title="Discussion" />
+        android:title="聊天" />
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_forum"
@@ -31,7 +31,7 @@
                 android:title="Sub item 1" />
             <item
                 android:icon="@drawable/ic_forum"
-                android:title="Logout" />
+                android:title="退出登录" />
         </menu>
     </item>
 

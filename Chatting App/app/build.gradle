@@ -59,4 +59,5 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
+    compile 'org.greenrobot:greendao:3.0.1'
 }

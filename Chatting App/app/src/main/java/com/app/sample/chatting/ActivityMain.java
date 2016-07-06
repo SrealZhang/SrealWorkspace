@@ -219,7 +219,7 @@ public class ActivityMain extends BaseActivity {
                         //在这里执行点击Friends执行相应的逻辑
                         Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
-                    case "Discussion":
+                    case "聊天":
                         //在这里执行点击Discussion执行相应的逻辑
                         Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
@@ -234,7 +234,7 @@ public class ActivityMain extends BaseActivity {
                         //在这里执行点击Sub item 1执行相应的逻辑
                         Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
-                    case "Logout":
+                    case "退出登录":
                         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMain.this);
                         builder.setTitle("Warn").setMessage("确定要退出").setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
