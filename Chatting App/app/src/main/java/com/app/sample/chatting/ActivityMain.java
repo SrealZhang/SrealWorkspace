@@ -1,12 +1,9 @@
 package com.app.sample.chatting;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -55,7 +51,6 @@ public class ActivityMain extends BaseActivity {
     private View parent_view;
 
     private String drawerMenuItemTitle;
-
 
 
     @Override
@@ -173,13 +168,13 @@ public class ActivityMain extends BaseActivity {
         }
     }
 
-    public void setVisibilityAppBar(boolean visible){
+    public void setVisibilityAppBar(boolean visible) {
         CoordinatorLayout.LayoutParams layout_visible = new CoordinatorLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         CoordinatorLayout.LayoutParams layout_invisible = new CoordinatorLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        if(visible){
+        if (visible) {
             appBarLayout.setLayoutParams(layout_visible);
             fab.show();
-        }else{
+        } else {
             appBarLayout.setLayoutParams(layout_invisible);
             fab.hide();
         }
@@ -211,33 +206,33 @@ public class ActivityMain extends BaseActivity {
 //                menuItem.setChecked(true);
                 drawerLayout.closeDrawers();
                 drawerMenuItemTitle = (String) menuItem.getTitle();
-                switch (drawerMenuItemTitle){
+                switch (drawerMenuItemTitle) {
                     case "Home":
                         //在这里执行点击Home执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
                     case "Messages":
                         //在这里执行点击Messages执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
                     case "Friends":
                         //在这里执行点击Friends执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
                     case "Discussion":
                         //在这里执行点击Discussion执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
                     case "设置":
                         //在这里执行点击Discussion执行相应的逻辑
-                       //  Toast.makeText(getApplication(),"faaf0",Toast.LENGTH_SHORT).show();
-                        Intent intent=new Intent(ActivityMain.this,ActivityLogin.class);
+                        //  Toast.makeText(getApplication(),"faaf0",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ActivityMain.this, ActivityLogin.class);
                         startActivity(intent);
                         break;
 
                     case "Sub item 1":
                         //在这里执行点击Sub item 1执行相应的逻辑
-                        Snackbar.make(parent_view, drawerMenuItemTitle+" Clicked ", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(parent_view, drawerMenuItemTitle + " Clicked ", Snackbar.LENGTH_SHORT).show();
                         break;
                     case "Logout":
                         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMain.this);
@@ -245,9 +240,8 @@ public class ActivityMain extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 IMContactServiceHelper.getmInstance().disconnect(ActivityMain.this);
-                                startActivity(new Intent(ActivityMain.this, ActivityLogin.class));
                             }
-                        }).setNegativeButton("取消",null).setCancelable(true).create().show();
+                        }).setNegativeButton("取消", null).setCancelable(true).create().show();
                         break;
 
                 }
