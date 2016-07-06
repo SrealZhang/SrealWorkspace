@@ -2,7 +2,6 @@ package com.app.sample.chatting.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,7 +102,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
 
         holder.time.setText(c.getDate());
         holder.content.setText(c.getSnippet());
-        Picasso.with(ctx).load(c.getFriend().getPhoto()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
+        Picasso.with(ctx).load(c.getFriend().getUserId()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
 
         // Here you apply the animation when the view is bound
         setAnimation(holder.itemView, position);

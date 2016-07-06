@@ -1,9 +1,11 @@
 package com.app.sample.chatting.fragment;
 
+import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,6 +28,8 @@ import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.widget.ClearEditText;
 import com.app.sample.chatting.widget.TextURLView;
+
+import java.io.FileNotFoundException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,7 +69,6 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.bind(this, view);
         init();
-        ButterKnife.bind(this, view);
         edtAccount.setText("test001");
         edtPassword.setText("111");
         return view;
@@ -81,7 +84,7 @@ public class LoginFragment extends Fragment {
     //登录
     @OnClick(R.id.btn_login)
     public void clickLogin(View view) {
-        RequestFocus(null);
+        ((ActivityLogin) getActivity()).RequestFocus(null);
         if (TextUtils.isEmpty(edtAccount.getText())) {
             edtAccount.setError("输入账号");
             return;
@@ -99,12 +102,25 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    //path:/storage/sdcard1/DCIM/Camera/IMG_20160702_085019.jpg
     //登录返回事件
     public void onEventMainThread(LoggedInEvent event) {
         if (event.isSuccessful()) {
             Log.d(TAG, "Successful login---回调成功");
             startActivity(new Intent(getActivity(), ActivityMain.class));
             getActivity().finish();
+
+//            Drawable bitmapDrawable = new BitmapDrawable(IMContactServiceHelper.getmInstance().getUserImage());
+//            Log.d("yangbin", bitmapDrawable + "");
+//            ivLoginPicture.setBackgroundDrawable(bitmapDrawable);
+//            String path = "/storage/sdcard1/com.xxAssistant/users/yy1250211588/user_small_head_img.jpg";
+//            try {
+//                IMContactServiceHelper.getmInstance().changeImage(path);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+
         } else {
             btnLogin.setClickable(true);
             btnLogin.setText("登陆");
@@ -114,6 +130,16 @@ public class LoginFragment extends Fragment {
                 MyApplication.showToast("聊天服务器验证失败");
                 Log.d(TAG, "聊天服务器验证失败");
             }
+        }
+    }
+
+    /**
+     * 打开相册
+     */
+    public void openAlbum() {
+        Intent takePictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {// 相机被卸载时不会崩溃
+            startActivityForResult(takePictureIntent, 2);
         }
     }
 
@@ -135,25 +161,4 @@ public class LoginFragment extends Fragment {
         super.onStop();
     }
 
-    public void RequestFocus(View v) {
-        View currentFocus = getActivity().getCurrentFocus();
-        if (currentFocus != null) {
-            Log.d(TAG, "currentFocus is not null");
-            hideKeybard(currentFocus.getWindowToken());
-            if (currentFocus.getWindowToken() != null) {
-                InputMethodManager im = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-                im.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            }
-        }
-    }
-
-    /**
-     * 隐藏输入法
-     */
-    protected void hideKeybard(IBinder token) {
-        if (token != null) {
-            InputMethodManager im = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
-            im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
 }

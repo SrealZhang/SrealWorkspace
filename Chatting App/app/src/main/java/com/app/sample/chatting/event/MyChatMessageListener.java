@@ -16,6 +16,7 @@ public class MyChatMessageListener implements ChatMessageListener {
     @Override
     public void processMessage(Chat chat, Message message) {
         if (TextUtils.isEmpty(message.getBody())) return;
+        Log.d(TAG, message.toString()+"\n"+"原句："+message.toXML());
         String bodyJson = "";
         bodyJson = message.getBody();
         Log.d(TAG, bodyJson);

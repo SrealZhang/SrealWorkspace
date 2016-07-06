@@ -9,8 +9,7 @@
         android:layout_height="80dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/profile" />
+        android:contentDescription="@string/app_name" />
 
     <RelativeLayout
         android:id="@+id/rl_user"
@@ -37,6 +36,7 @@
                 android:hint="请输入您的账号"
                 android:inputType="text"
                 android:padding="5dp"
+                android:text="yangbin"
                 android:textSize="14sp" />
 
             <View
@@ -53,6 +53,7 @@
                 android:hint="请输入您的密码"
                 android:inputType="textPassword"
                 android:padding="5dp"
+                android:text="111"
                 android:textSize="14sp" />
         </LinearLayout>
 

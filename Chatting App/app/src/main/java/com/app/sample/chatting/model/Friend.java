@@ -1,25 +1,21 @@
 package com.app.sample.chatting.model;
 
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Friend implements Serializable {
 	private long id;
 	private String name;
-	private int photo;
+	private String userId;
 
-	public Friend(long id, String name, int photo) {
+	public Friend(long id, String name, String userId) {
 		this.id = id;
 		this.name = name;
-		this.photo = photo;
+		this.userId = userId;
 	}
 
-	public Friend(String name, int photo) {
+	public Friend(String name, String userId) {
 		this.name = name;
-		this.photo = photo;
+		this.userId = userId;
 	}
 
 	public long getId() {
@@ -30,7 +26,7 @@ public class Friend implements Serializable {
 		return name;
 	}
 
-	public int getPhoto() {
-		return photo;
+	public String getUserId() {
+		return userId;
 	}
 }

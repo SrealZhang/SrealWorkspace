@@ -1,9 +1,10 @@
 package com.app.sample.chatting.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.app.sample.chatting.ActivityLogin;
+import com.app.sample.chatting.ActivityMain;
+import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
-import com.app.sample.chatting.util.Ereg;
+import com.app.sample.chatting.event.LoggedInEvent;
+import com.app.sample.chatting.service.IMContactServiceHelper;
+import com.app.sample.chatting.widget.ClearEditText;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
 
 /**
@@ -23,69 +33,37 @@ import com.app.sample.chatting.util.Ereg;
  * author:  赖创文
  * date:   2016/3/2 15:46
  */
-public class RegisterFragment extends android.support.v4.app.Fragment implements View.OnClickListener, TextWatcher {
-    private ImageButton register_head_iv;
-    private TextView register_head_tv1;
-    private Button register_submit;//注册提交按钮
-    private EditText register_username, register_password1, register_password2;//输入用户名，密码，确定密码
-    private Ereg ereg = new Ereg();//正则表达式工具类
+public class RegisterFragment extends Fragment {
+
+    private static final String TAG = "nilaiRegisterFragment";
+    @BindView(R.id.ibtn_back)
+    ImageButton ibtnBack;
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
+    @BindView(R.id.edt_username)
+    ClearEditText edtUsername;
+    @BindView(R.id.edt_password1)
+    ClearEditText edtPassword1;
+    @BindView(R.id.edt_password2)
+    ClearEditText edtPassword2;
+    @BindView(R.id.btn_submit)
+    Button btnSubmit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
-        findViewById(view);
+        ButterKnife.bind(this, view);
+        tvTitle.setText("注册");//改变标题
         return view;
     }
 
-    /**
-     * 查找控件
-     *
-     * @param view
-     */
-    private void findViewById(View view) {
-        register_head_iv = (ImageButton) view.findViewById(R.id.head_iv);
-        register_head_tv1 = (TextView) view.findViewById(R.id.head_tv1);
-        register_submit = (Button) view.findViewById(R.id.register_submit);
-        register_username = (EditText) view.findViewById(R.id.register_username);
-        register_password1 = (EditText) view.findViewById(R.id.register_password1);
-        register_password2 = (EditText) view.findViewById(R.id.register_password2);
-
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        init();
-        setListener();
-    }
-
-    /**
-     * 设置监听事件
-     */
-    private void setListener() {
-        register_head_iv.setOnClickListener(this);
-        register_submit.setOnClickListener(this);
-        register_username.addTextChangedListener(this);
-        register_password1.addTextChangedListener(this);
-        register_password2.addTextChangedListener(this);
-
-
-    }
-
-    /**
-     * 初始化数据
-     */
-    private void init() {
-        register_head_tv1.setText("注册");//改变标题
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.register_submit:
+    @OnClick({R.id.btn_submit, R.id.ibtn_back})
+    public void onClickView(View view) {
+        switch (view.getId()) {
+            case R.id.btn_submit:
+                clickRegist();
                 break;
-            case R.id.head_iv:
+            case R.id.ibtn_back:
                 ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
                 ((ActivityLogin) getActivity()).isRegist = false;
                 break;
@@ -95,48 +73,64 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
 
     }
 
+    //注册
+    public void clickRegist() {
+        ((ActivityLogin) getActivity()).RequestFocus(null);
+        if (TextUtils.isEmpty(edtUsername.getText())) {
+            edtUsername.setError("输入账号");
+            return;
+        }
+        if (TextUtils.isEmpty(edtPassword1.getText())) {
+            edtPassword1.setError("输入密码");
+            return;
+        }
+        if (TextUtils.isEmpty(edtPassword2.getText())) {
+            edtPassword2.setError("输入密码");
+            return;
+        }
+        if (!edtPassword2.getText().toString().equals(edtPassword1.getText().toString())) {
+            MyApplication.showToast("两次输入密码不一致");
+            edtPassword2.setError("输入密码不一致");
+            return;
+        }
+        try {
+            btnSubmit.setText("正在注册...");
+            IMContactServiceHelper.getmInstance().loginorRegist(getActivity(), edtUsername.getText().toString(), edtPassword1.getText().toString(), 1);
+            btnSubmit.setClickable(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+    //注册返回事件
+    public void onEventMainThread(LoggedInEvent event) {
+        if (event.isSuccessful()) {
+            Log.d(TAG, "Successful ---注册成功");
+            ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
+            ((ActivityLogin) getActivity()).isRegist = false;
+            MyApplication.showToast(event.getErrorInfo());
+        } else {
+            Log.d(TAG, "Successful ---注册失败");
+            btnSubmit.setClickable(true);
+            btnSubmit.setText("注册");
+            if (event.getErrorInfo() != null) {
+                MyApplication.showToast(event.getErrorInfo());
+            } else {
+                MyApplication.showToast("聊天服务器注册失败");
+                Log.d(TAG, "聊天服务器注册失败");
+            }
+        }
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-   /*     //判断账号是否是邮箱
-        if(ereg.emailAstrict(register_username.getText().toString())){
-            register_username.setTextColor(getResources().getColor(R.color.black));
-        }else {
-            register_username.setTextColor(getResources().getColor(R.color.red));
-        }
-        //判断密码是不是以字母开头的6-20数据
-          if(ereg.passwordAstrict(register_password1.getText().toString())){
-              register_password1.setTextColor(getResources().getColor(R.color.black));
-          }else {
-              register_password1.setTextColor(getResources().getColor(R.color.red));
-
-          }
-        //判断密码是不是以字母开头的6-20数据
-        if(ereg.passwordAstrict(register_password2.getText().toString())){
-            register_password2.setTextColor(getResources().getColor(R.color.black));
-        }else {
-            register_password2.setTextColor(getResources().getColor(R.color.red));
-
-        }
-        //两个密码是否一样
-        if(register_password2.getText().toString().equals(register_password1.getText().toString())){
-            register_password2.setTextColor(getResources().getColor(R.color.black));
-        }else {
-            register_password2.setTextColor(getResources().getColor(R.color.red));
-
-        }
-*/
-
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
-
 }

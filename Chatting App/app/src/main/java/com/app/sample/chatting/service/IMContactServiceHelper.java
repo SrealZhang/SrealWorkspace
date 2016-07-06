@@ -2,18 +2,27 @@ package com.app.sample.chatting.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.app.sample.chatting.MyApplication;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.MyRoomMessageListener;
+import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.util.Base64Util;
+import com.app.sample.chatting.util.FileSave;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -21,8 +30,16 @@ import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -35,7 +52,7 @@ import java.util.Set;
  * 功能辅助类
  */
 public class IMContactServiceHelper {
-    private static final String TAG = "yangbinIMContactService";
+    private static final String TAG = "nilaiIMContactService";
 
     public static IMContactServiceHelper mInstance;
 
@@ -57,7 +74,7 @@ public class IMContactServiceHelper {
     }
 
     //退出登录
-      /*
+    /*
     * This disconnection method is created here to validate if the connection is not null otherwise
     *   it may crash the application.
     * */
@@ -95,73 +112,20 @@ public class IMContactServiceHelper {
     }
 
     /**
-     * 获取当前登录用户的所有好友信息
+     * 返回所有用户信息 <RosterEntry>
      *
-     * @return
+     * @return List(RosterEntry)
      */
-    public Set getAllFriends() {
-        if (isLoginSucceed()) {
-            return Roster.getInstanceFor(getmConnection()).getEntries();
-        }
-        throw new NullPointerException("服务器连接失败，请先连接服务器");
-    }
-
-    String textDialog = "";
-    boolean isExists = false;
-
-    public String getFriends() {
-        try {
-            Set set = AccountManager.getInstance(getmConnection()).getAccountAttributes();
-            Iterator iterator = set.iterator();
-            /**
-             * 遍历方法一，迭代遍历
-             */
-            for (Iterator<String> iterator1 = set.iterator(); iterator1.hasNext(); ) {
-                Log.d(TAG, iterator1.next() + "");
-            }
-        } catch (SmackException.NoResponseException e) {
-            e.printStackTrace();
-        } catch (XMPPException.XMPPErrorException e) {
-            e.printStackTrace();
-        } catch (SmackException.NotConnectedException e) {
-            e.printStackTrace();
-        }
-        textDialog = "";
-        //获取好友列表
+    public List<Friend> getAllFriends() {
         Roster roster = Roster.getInstanceFor(getmConnection());
-        Collection<RosterEntry> entries = roster.getEntries();
-        for (RosterEntry entry : entries) {
-            textDialog = textDialog + entry;
+        List<Friend> EntriesList = new ArrayList<Friend>();
+        Collection<RosterEntry> rosterEntry = roster.getEntries();
+        Iterator<RosterEntry> i = rosterEntry.iterator();
+        while (i.hasNext()) {
+            RosterEntry entry = i.next();
+            EntriesList.add(new Friend(1, entry.getName(), entry.getUser()));
         }
-        return textDialog;
-    }
-
-    public List<Hashtable<String, String>> getData(List<Hashtable<String, String>> listContent) {
-        listContent.clear();
-        if (isLoginSucceed()) {
-            Hashtable<String, String> table2 = new Hashtable<>();
-            table2.put("User", "南京恒智服务咨询");
-            table2.put("Group", "开发支持");
-            listContent.add(table2);
-            //获取好友列表
-            Roster roster = Roster.getInstanceFor(getmConnection());
-            Collection<RosterEntry> entries = roster.getEntries();
-            Hashtable<String, String> table1;
-            Log.d(TAG, entries + "");
-            for (RosterEntry entry : entries) {
-                Log.d(TAG, entry + "");
-                table1 = new Hashtable<>();
-                table1.put("User", entry.getName() + "");
-                Log.d(TAG, "getStatus" + entry.getStatus() + "getName" + entry.getName() +
-                        "getType" + entry.getType() + "getUser" + entry.getUser());
-                table1.put("Group", entry.getGroups() + "");
-                listContent.add(table1);
-            }
-        } else {
-            Log.d(TAG, "获取失败，您没有连接服务器...");
-        }
-        Log.d(TAG, listContent.size() + " listContent.size()");
-        return listContent;
+        return EntriesList;
     }
 
     /**
@@ -332,5 +296,62 @@ public class IMContactServiceHelper {
         return XMPPConnectionService.getmConnection();
     }
 
+    /**
+     * 获取用户头像信息
+     */
+    public void getUserImage(String user) {
 
+        if (FileSave.fileIsExists(FileSave.Second_PATH + FileSave.Second_PATH + user + ".jpg"))
+            return;
+        try {
+            Log.d(TAG, "获取用户头像信息: " + user);
+            VCard vcard = new VCard();
+            if (TextUtils.isEmpty(user))
+                vcard.load(getmConnection());
+            else
+                vcard.load(getmConnection(), user);
+            if (vcard == null || vcard.getAvatar() == null) {
+                return;
+            }
+            Base64Util.saveBitmap2file(vcard.getAvatar(), user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    /**
+     * 修改用户头像信息
+     */
+    public void changeImage(String fPath) throws Exception {
+        File f = new File(fPath);
+        VCard vcard = new VCard();
+        vcard.load(getmConnection());
+        byte[] bytes;
+        bytes = getFileBytes(f);
+        String encodedImage = Base64Util.encodeBase64File(fPath);
+        vcard.setAvatar(bytes, encodedImage);
+        vcard.setEncodedImage(encodedImage);
+        vcard.setField("PHOTO", "<TYPE>image/jpg</TYPE><BINVAL>"
+                + encodedImage + "</BINVAL>", true);
+        vcard.save(getmConnection());
+    }
+
+    private static byte[] getFileBytes(File file) throws IOException {
+        BufferedInputStream bis = null;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(file));
+            int bytes = (int) file.length();
+            byte[] buffer = new byte[bytes];
+            int readBytes = bis.read(buffer);
+            if (readBytes != buffer.length) {
+                throw new IOException("Entire file not read");
+            }
+            return buffer;
+        } finally {
+            if (bis != null) {
+                bis.close();
+            }
+        }
+    }
 }

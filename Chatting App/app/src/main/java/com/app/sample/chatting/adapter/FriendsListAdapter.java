@@ -1,8 +1,10 @@
 package com.app.sample.chatting.adapter;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.service.IMContactServiceHelper;
+import com.app.sample.chatting.util.FileSave;
 import com.app.sample.chatting.widget.CircleTransform;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +35,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     private ItemFilter mFilter = new ItemFilter();
 
     private Context ctx;
+    private MyHandler handler = new MyHandler();
 
     private OnItemClickListener mOnItemClickListener;
 
@@ -44,7 +51,6 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public FriendsListAdapter(Context context, List<Friend> items) {
         original_items = items;
         filtered_items = items;
-
         ctx = context;
     }
 
@@ -77,12 +83,28 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    int loadIconPosition = -1;
+
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        loadIconPosition = position;
         final Friend c = filtered_items.get(position);
         holder.name.setText(c.getName());
-        Picasso.with(ctx).load(c.getPhoto()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
-
+        final File f = new File(FileSave.Second_PATH + c.getUserId() + ".jpg");
+        Log.d("nilai图片名称", FileSave.Second_PATH + c.getUserId());
+        if (f.exists())
+            Picasso.with(ctx).load(f).resize(100, 100).transform(new CircleTransform()).into(holder.image);
+        else if (loadIconPosition < position) {
+            MyApplication.getmInstance().runThread(new Thread() {
+                @Override
+                public void run() {
+                    IMContactServiceHelper.getmInstance().getUserImage(c.getUserId());
+                    Message message = new Message();
+                    message.what = 1;
+                    handler.sendMessage(message);
+                }
+            });
+        }
         // Here you apply the animation when the view is bound
         setAnimation(holder.itemView, position);
 
@@ -96,7 +118,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         });
     }
 
-    public Friend getItem(int position){
+    public Friend getItem(int position) {
         return filtered_items.get(position);
     }
 
@@ -104,9 +126,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
      * Here is the key method to apply the animation
      */
     private int lastPosition = -1;
-    private void setAnimation(View viewToAnimate, int position){
+
+    private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > lastPosition){
+        if (position > lastPosition) {
             Animation animation = AnimationUtils.loadAnimation(ctx, R.anim.slide_in_bottom);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
@@ -150,4 +173,16 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         }
     }
 
+    class MyHandler extends Handler {
+        //接受message的信息
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            super.handleMessage(msg);
+            if (msg.what == 1) {
+                Log.d("nilai", "更新了一波");
+                notifyDataSetChanged();
+            }
+        }
+    }
 }

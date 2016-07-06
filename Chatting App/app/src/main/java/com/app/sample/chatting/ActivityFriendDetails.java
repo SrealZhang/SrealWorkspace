@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -17,8 +18,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.util.FileSave;
+import com.app.sample.chatting.widget.CircleTransform;
+import com.squareup.picasso.Picasso;
 
-public class ActivityFriendDetails extends BaseActivity {
+import java.io.File;
+
+public class ActivityFriendDetails extends AppCompatActivity {
 
     public static final String EXTRA_OBJCT = "com.app.sample.chatting";
 
@@ -35,7 +41,8 @@ public class ActivityFriendDetails extends BaseActivity {
     private View parent_view;
 
     @SuppressWarnings("ConstantConditions")
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_details);
         parent_view = findViewById(android.R.id.content);
@@ -51,7 +58,8 @@ public class ActivityFriendDetails extends BaseActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(friend.getName());
 
-        ((ImageView) findViewById(R.id.image)).setImageResource(friend.getPhoto());
+//        ((ImageView) findViewById(R.id.image)).setImageResource(friend.getUserId());
+        Picasso.with(this).load(new File(FileSave.Second_PATH + friend.getUserId() + ".jpg")).into((ImageView) findViewById(R.id.image));
         ((Button) findViewById(R.id.bt_view_photos)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,12 +89,13 @@ public class ActivityFriendDetails extends BaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
-        } else if(item.getItemId() == R.id.action_send_message){
+        } else if (item.getItemId() == R.id.action_send_message) {
             Intent i = new Intent(getApplicationContext(), ActivityChatDetails.class);
             i.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
             startActivity(i);
@@ -94,6 +103,7 @@ public class ActivityFriendDetails extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_friend_details, menu);

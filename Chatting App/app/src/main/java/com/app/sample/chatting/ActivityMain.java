@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -53,6 +55,8 @@ public class ActivityMain extends BaseActivity {
     private View parent_view;
 
     private String drawerMenuItemTitle;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

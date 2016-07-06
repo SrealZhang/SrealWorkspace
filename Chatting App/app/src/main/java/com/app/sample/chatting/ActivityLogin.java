@@ -1,21 +1,33 @@
 package com.app.sample.chatting;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.app.sample.chatting.fragment.LoginFragment;
 import com.app.sample.chatting.fragment.RegisterFragment;
 import com.app.sample.chatting.util.UtilRoat3D;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 
 /**
@@ -116,6 +128,20 @@ public class ActivityLogin extends BaseActivity {
             rotation.setInterpolator(new DecelerateInterpolator());
             fragment_login_content.startAnimation(rotation);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            String[] proj = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            Log.d("nilaipath", path);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

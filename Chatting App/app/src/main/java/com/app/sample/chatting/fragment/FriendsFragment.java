@@ -1,6 +1,8 @@
 package com.app.sample.chatting.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,6 +19,7 @@ import com.app.sample.chatting.R;
 import com.app.sample.chatting.adapter.FriendsListAdapter;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.widget.DividerItemDecoration;
 
 public class FriendsFragment extends Fragment {
@@ -25,27 +28,27 @@ public class FriendsFragment extends Fragment {
     public FriendsListAdapter mAdapter;
     private ProgressBar progressBar;
     View view;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_friends, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        progressBar  = (ProgressBar) view.findViewById(R.id.progressBar);
-		
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
         // use a linear layout manager
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
-		recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-		
+
         // specify an adapter (see also next example)
-        mAdapter = new FriendsListAdapter(getActivity(), Constant.getFriendsData(getActivity()));
+        mAdapter = new FriendsListAdapter(getActivity(), IMContactServiceHelper.getmInstance().getAllFriends());
         recyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new FriendsListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, Friend obj, int position) {
+
                 ActivityFriendDetails.navigate((ActivityMain) getActivity(), v.findViewById(R.id.image), obj);
             }
         });
@@ -53,7 +56,7 @@ public class FriendsFragment extends Fragment {
         return view;
     }
 
-    public void onRefreshLoading(){
+    public void onRefreshLoading() {
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
     }

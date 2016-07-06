@@ -82,7 +82,7 @@ public class Constant {
         String s_arr[] = ctx.getResources().getStringArray(R.array.people_names);
         TypedArray drw_arr = ctx.getResources().obtainTypedArray(R.array.people_photos);
         for (int i = 0; i < s_arr.length; i++) {
-            Friend fr = new Friend(i, s_arr[i], drw_arr.getResourceId(i, -1));
+            Friend fr = new Friend(i, s_arr[i], "yangbin");
             items.add(fr);
         }
         return items;
@@ -95,7 +95,7 @@ public class Constant {
         String s_cht[] = ctx.getResources().getStringArray(R.array.chat_snippet);
         String s_date[] = ctx.getResources().getStringArray(R.array.chat_date);
         for (int i = 0; i < 10; i++) {
-            items.add(new Chat(i, s_date[i], true, new Friend(s_arr[i + 5], drw_arr.getResourceId(i + 5, -1)), s_cht[i]));
+            items.add(new Chat(i, s_date[i], true, new Friend(s_arr[i + 5], "yangbin"), s_cht[i]));
         }
         return items;
     }

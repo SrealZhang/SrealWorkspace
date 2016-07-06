@@ -232,14 +232,14 @@ public class XMPPConnectionService extends Service {
         }
         try {
             AccountManager.getInstance(mConnection).createAccount(username, password);
-            EventBus.getDefault().post(new LoggedInEvent(false, "注册成功，\n用户名：" + username + "\n密码:" + password));
+            EventBus.getDefault().post(new LoggedInEvent(true, "注册成功，\n用户名：" + username + "\n密码:" + password));
             Log.d(TAG, "注册成功");
         } catch (SmackException.NotConnectedException e) {
             Log.e(TAG, "注册失败,原因0" + e);
             EventBus.getDefault().post(new LoggedInEvent(false, "注册失败，服务器已断开"));
             e.printStackTrace();
         } catch (XMPPException.XMPPErrorException e) {
-            EventBus.getDefault().post(new LoggedInEvent(false, "注册失败，已存在用户"));
+            EventBus.getDefault().post(new LoggedInEvent(false, "注册失败，已存在用户或其他原因"));
             Log.e(TAG, "注册失败,原因1" + e);
             e.printStackTrace();
         } catch (SmackException.NoResponseException e) {

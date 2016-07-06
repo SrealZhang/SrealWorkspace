@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by neo2 on 2016/7/4.
@@ -86,4 +88,11 @@ public class MyApplication extends Application {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
     }
+
+    ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+
+    public void runThread(Runnable runnable) {
+        cachedThreadPool.execute(runnable);
+    }
 }
+
