@@ -354,4 +354,20 @@ public class IMContactServiceHelper {
             }
         }
     }
+
+    //添加好友
+    public boolean addFriend(String friendName, String name) throws SmackException.NotLoggedInException, SmackException.NotConnectedException, SmackException.NoResponseException {
+
+        try {
+            Roster roster = Roster.getInstanceFor(getmConnection());
+            roster.createEntry(friendName.trim() + "@"+ Constant.XMPP_HOST, name, new String[]{"Friends"});
+            MyApplication.showToast("添加好友成功！！");
+            return true;
+        } catch (XMPPException e) {
+            e.printStackTrace();
+            Log.d(TAG + "添加好友失败！！", e + "");
+            MyApplication.showToast("添加好友失败！！");
+            return false;
+        }
+    }
 }

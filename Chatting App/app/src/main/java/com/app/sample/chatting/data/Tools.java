@@ -25,7 +25,7 @@ public class Tools {
         return f.floatValue();
     }
 
-    public static void systemBarLolipop(Activity act){
+    public static void systemBarLolipop(Activity act) {
         if (getAPIVerison() >= 5.0) {
             Window window = act.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -38,7 +38,7 @@ public class Tools {
         Display display = activity.getWindowManager().getDefaultDisplay();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
-        float screenWidth  = displayMetrics.widthPixels;
+        float screenWidth = displayMetrics.widthPixels;
         float cellWidth = activity.getResources().getDimension(R.dimen.recycler_item_size);
         return Math.round(screenWidth / cellWidth);
     }

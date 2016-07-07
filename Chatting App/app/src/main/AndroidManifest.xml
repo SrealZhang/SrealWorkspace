@@ -38,7 +38,12 @@
             android:name=".ActivityGroupDetails"
             android:label="Group Details" />
         <!--登录-->
-        <activity android:name=".ActivityLogin" />
+        <activity
+            android:name=".ActivityLogin"
+            android:label="登录" />
+        <activity
+            android:name=".activity.chat.ChatActivity"
+            android:label="聊天" />
 
         <service
             android:name=".service.XMPPConnectionService"

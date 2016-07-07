@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.util.FileSave;
 import com.app.sample.chatting.widget.CircleTransform;
@@ -24,7 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-public class ActivityFriendDetails extends AppCompatActivity {
+public class ActivityFriendDetails extends BaseActivity {
 
     public static final String EXTRA_OBJCT = "com.app.sample.chatting";
 
@@ -96,8 +97,8 @@ public class ActivityFriendDetails extends AppCompatActivity {
             onBackPressed();
             return true;
         } else if (item.getItemId() == R.id.action_send_message) {
-            Intent i = new Intent(getApplicationContext(), ActivityChatDetails.class);
-            i.putExtra(ActivityChatDetails.KEY_FRIEND, friend);
+            Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+            i.putExtra(ChatActivity.KEY_FRIEND, friend);
             startActivity(i);
             return true;
         }

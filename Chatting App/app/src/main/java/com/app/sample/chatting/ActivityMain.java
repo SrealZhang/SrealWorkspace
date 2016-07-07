@@ -17,13 +17,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.app.sample.chatting.activity.chat.ChatActivity;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.fragment.ChatsFragment;
 import com.app.sample.chatting.fragment.FragmentAdapter;
@@ -32,8 +37,10 @@ import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 
-public class ActivityMain extends BaseActivity {
+import org.jivesoftware.smack.SmackException;
 
+public class ActivityMain extends BaseActivity {
+    public static final String TAG = "nilaiActivityMain";
 
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar toolbar;
@@ -80,6 +87,30 @@ public class ActivityMain extends BaseActivity {
                 switch (viewPager.getCurrentItem()) {
                     case 0:
                         Snackbar.make(parent_view, "Add Friend Clicked", Snackbar.LENGTH_SHORT).show();
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityMain.this);
+                        View v = getLayoutInflater().inflate(R.layout.dialog_addfriend, null);
+                        final EditText edtFriend = (EditText) v.findViewById(R.id.edt_friendId);
+                        dialog.setView(v).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (TextUtils.isEmpty(edtFriend.getText().toString()))
+                                    edtFriend.setError("is can't null");
+                                else
+                                    try {
+                                        IMContactServiceHelper.getmInstance().addFriend(edtFriend.getText().toString(), edtFriend.getText().toString());
+                                    } catch (SmackException.NotLoggedInException e) {
+                                        e.printStackTrace();
+                                        Log.d(TAG + "添加好友失败！！", e + "");
+                                    } catch (SmackException.NotConnectedException e) {
+                                        e.printStackTrace();
+                                        Log.d(TAG + "添加好友失败！！", e + "");
+                                    } catch (SmackException.NoResponseException e) {
+                                        e.printStackTrace();
+                                        Log.d(TAG + "添加好友失败！！", e + "");
+                                    }
+                            }
+                        });
+                        dialog.show();
                         break;
                     case 1:
                         Intent i = new Intent(getApplicationContext(), ActivitySelectFriend.class);

@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import com.app.sample.chatting.ActivityChatDetails;
 import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.R;
+import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.adapter.ChatsListAdapter;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.model.Chat;
@@ -51,11 +52,11 @@ public class ChatsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-		
+
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
-		recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         items = Constant.getChatsData(getActivity());
@@ -71,7 +72,7 @@ public class ChatsFragment extends Fragment {
                     myToggleSelection(position);
                     return;
                 }
-                ActivityChatDetails.navigate((ActivityMain) getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet());
+                ChatActivity.navigate((ActivityMain) getActivity(), v.findViewById(R.id.lyt_parent), obj.getFriend(), obj.getSnippet());
             }
         });
 
@@ -97,7 +98,7 @@ public class ChatsFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 mAdapter.removeSelectedItem();
                 mAdapter.notifyDataSetChanged();
-                Snackbar.make(view, "Delete "+count+" items success", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(view, "Delete " + count + " items success", Snackbar.LENGTH_SHORT).show();
                 modeCallBack.onDestroyActionMode(actionMode);
             }
         });
@@ -129,9 +130,9 @@ public class ChatsFragment extends Fragment {
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             // Inflate a menu resource providing context menu items
-             MenuInflater inflater = actionMode.getMenuInflater();
-             inflater.inflate(R.menu.menu_multiple_select, menu);
-            ((ActivityMain)getActivity()).setVisibilityAppBar(false);
+            MenuInflater inflater = actionMode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multiple_select, menu);
+            ((ActivityMain) getActivity()).setVisibilityAppBar(false);
             return true;
         }
 
@@ -142,7 +143,7 @@ public class ChatsFragment extends Fragment {
 
         @Override
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            if(menuItem.getItemId() == R.id.action_delete && mAdapter.getSelectedItemCount()>0){
+            if (menuItem.getItemId() == R.id.action_delete && mAdapter.getSelectedItemCount() > 0) {
                 dialogDeleteMessageConfirm(mAdapter.getSelectedItemCount());
             }
             return false;
@@ -153,7 +154,7 @@ public class ChatsFragment extends Fragment {
             actionMode.finish();
             actionMode = null;
             mAdapter.clearSelections();
-            ((ActivityMain)getActivity()).setVisibilityAppBar(true);
+            ((ActivityMain) getActivity()).setVisibilityAppBar(true);
         }
     };
 }
