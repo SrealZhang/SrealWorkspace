@@ -22,7 +22,7 @@ import java.util.Date;
  *
  * @author kymjs (http://www.kymjs.com/)
  */
-public class Message {
+public class MessageChat {
     public final static int MSG_TYPE_TEXT = 3;
     public final static int MSG_TYPE_PHOTO = 1;
     public final static int MSG_TYPE_FACE = 2;
@@ -44,9 +44,9 @@ public class Message {
     private Boolean sendSucces;
     private Date time;
 
-    public Message(int type, int state, String fromUserName,
-                   String fromUserAvatar, String toUserName, String toUserAvatar,
-                   String content, Boolean isSend, Boolean sendSucces, Date time) {
+    public MessageChat(int type, int state, String fromUserName,
+                       String fromUserAvatar, String toUserName, String toUserAvatar,
+                       String content, Boolean isSend, Boolean sendSucces, Date time) {
         super();
         this.type = type;
         this.state = state;

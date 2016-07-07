@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
@@ -18,17 +17,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.app.sample.chatting.ActivityChatDetails;
 import com.app.sample.chatting.ActivityMain;
+import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.adapter.ChatsListAdapter;
 import com.app.sample.chatting.data.Constant;
+import com.app.sample.chatting.event.Event_SureShowNum;
+import com.app.sample.chatting.event.Event_SureChange;
 import com.app.sample.chatting.model.Chat;
+import com.app.sample.chatting.model.Friend;
+import com.app.sample.chatting.util.DateUtil;
 import com.app.sample.chatting.widget.DividerItemDecoration;
+
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
+import greendao.NeoContractLately;
+import greendao.NeoContractLatelyDao;
 
 public class ChatsFragment extends Fragment {
 
@@ -157,4 +166,47 @@ public class ChatsFragment extends Fragment {
             ((ActivityMain) getActivity()).setVisibilityAppBar(true);
         }
     };
+
+    //获取整个表的数据集合
+    public synchronized void getUpdate() {
+        QueryBuilder<NeoContractLately> qb = MyApplication.getDaoSession().getNeoContractLatelyDao().queryBuilder();
+        if (qb.count() == 0) {
+            mAdapter.refresh(new ArrayList<Chat>());
+            return;
+        }
+        qb.orderDesc(NeoContractLatelyDao.Properties.Time);
+        List<NeoContractLately> mList = qb.list();
+        items.clear();
+        for (int i = 0; i < mList.size(); i++) {
+            //long id, String date, boolean read, Friend friend, String snippet
+            items.add(new Chat(i, DateUtil.long2Date(mList.get(i).getTime()), true, new Friend(mList.get(i).getFriendName(), mList.get(i).getFriendJID()), mList.get(i).getBody()));
+        }
+        mAdapter.refresh(items);
+        EventBus.getDefault().post(new Event_SureShowNum(true));
+    }
+
+    public void onEventMainThread(Event_SureChange event) {
+        if (event.isSuccessful()) {
+            getUpdate();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUpdate();
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
 }

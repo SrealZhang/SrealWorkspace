@@ -17,11 +17,11 @@ package com.app.sample.chatting.activity.chat;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
@@ -32,21 +32,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.adapter.chat.ChatAdapter;
 import com.app.sample.chatting.bean.Emojicon;
 import com.app.sample.chatting.bean.Faceicon;
-import com.app.sample.chatting.bean.Message;
-import com.app.sample.chatting.data.Tools;
+import com.app.sample.chatting.bean.MessageChat;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.data.emoji.DisplayRules;
+import com.app.sample.chatting.event.chat.ChatPersonMessageEvent;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.XMPPConnectionService;
+import com.app.sample.chatting.util.ToastUtil;
+import com.app.sample.chatting.util.SaveUtil;
 import com.app.sample.chatting.widget.KJChatKeyboard;
-
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -63,14 +65,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
+import greendao.NeoChatHistory;
+
 /**
  * 聊天主界面
  */
 public class ChatActivity extends KJActivity {
 
     public static final int REQUEST_CODE_GETIMAGE_BYSDCARD = 0x1;
+    private static final int TAKE_PICTURE = 101;
     public static String KEY_FRIEND = "com.app.sample.chatting.FRIEND";
     public static String KEY_SNIPPET = "com.app.sample.chatting.SNIPPET";
+    public final Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    public static String chatwithWho = "";
+
+    public Uri outputFileUri;
+    @BindView(R.id.iv_takedPic)
+    ImageView ivTakedPic;
 
     // give preparation animation activity transition
     public static void navigate(AppCompatActivity activity, View transitionImage, Friend obj, String snippet) {
@@ -85,7 +99,7 @@ public class ChatActivity extends KJActivity {
     private ListView mRealListView;
     private ActionBar actionBar;
     private Friend friend;
-    List<Message> datas = new ArrayList<Message>();
+    List<MessageChat> datas = new ArrayList<MessageChat>();
     private ChatAdapter adapter;
     private Chat chatOfFriend;
 
@@ -97,6 +111,7 @@ public class ChatActivity extends KJActivity {
         friend = (Friend) intent.getExtras().getSerializable(KEY_FRIEND);
         String snippet = intent.getStringExtra(KEY_SNIPPET);
         chatOfFriend = createChat(friend.getUserId());
+        chatwithWho = friend.getUserId();
         initToolbar();
     }
 
@@ -127,27 +142,41 @@ public class ChatActivity extends KJActivity {
             @Override
             public void send(String content) {
                 try {
+                    if (chatOfFriend == null) {
+                        MyApplication.showToast("接收方无效");
+                        return;
+                    }
+
                     chatOfFriend.sendMessage(content);
+
+
                 } catch (SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     MyApplication.showToast("发送失败");
                 }
-                Message message = new Message(Message.MSG_TYPE_TEXT, Message.MSG_STATE_SUCCESS,
+                //Long id, String myJID, String friendJID, Long time, Integer sendState, String body
+                NeoChatHistory hzChatHistory = new NeoChatHistory(
+                        null, Constant.getMyOpenfireId(), chatwithWho, System.currentTimeMillis(), 1, content, true);
+
+                MessageChat message = new MessageChat(MessageChat.MSG_TYPE_TEXT, MessageChat.MSG_STATE_SUCCESS,
                         "Tom", "avatar", "Jerry",
-                        "avatar", content, true, true, new Date());
+                        "avatar", content, true, true,
+                        transferLongToDate(hzChatHistory.getTime()));
                 datas.add(message);
                 adapter.refresh(datas);
-                createReplayMsg(message);
+                mRealListView.setSelection(adapter.getCount() - 1);
+                SaveUtil.saveChatHistoryMessage(hzChatHistory);
+//                createReplayMsg(message);
             }
 
             @Override
             public void selectedFace(Faceicon content) {
-                Message message = new Message(Message.MSG_TYPE_FACE, Message.MSG_STATE_SUCCESS,
+                MessageChat message = new MessageChat(MessageChat.MSG_TYPE_FACE, MessageChat.MSG_STATE_SUCCESS,
                         "Tom", "avatar", "Jerry", "avatar", content.getPath(), true, true, new
                         Date());
                 datas.add(message);
                 adapter.refresh(datas);
-                createReplayMsg(message);
+//                createReplayMsg(message);
             }
 
             @Override
@@ -167,11 +196,21 @@ public class ChatActivity extends KJActivity {
                         goToAlbum();
                         break;
                     case 1:
-                        ViewInject.toast("跳转相机");
+                        ToastUtil.toast("跳转到相机");
+                        //创建输出文件
+                        File file = new File(Environment.getExternalStorageDirectory(), "temp.jpg");
+                        outputFileUri = Uri.fromFile(file);
+                        //生成intent
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                        //启动摄像头应用程序
+                        startActivityForResult(intent, TAKE_PICTURE);
                         break;
                 }
             }
         });
+
+
         List<String> faceCagegory = new ArrayList<>();
 //        File faceList = FileUtils.getSaveFolder("chat");
         File faceList = new File("");
@@ -189,44 +228,54 @@ public class ChatActivity extends KJActivity {
     }
 
     private void initListView() {
-        byte[] emoji = new byte[]{
-                (byte) 0xF0, (byte) 0x9F, (byte) 0x98, (byte) 0x81
-        };
-        Message message = new Message(Message.MSG_TYPE_TEXT,
-                Message.MSG_STATE_SUCCESS, "\ue415", "avatar", "Jerry", "avatar",
-                new String(emoji), false, true, new Date(System.currentTimeMillis()
-                - (1000 * 60 * 60 * 24) * 8));
-        Message message1 = new Message(Message.MSG_TYPE_TEXT,
-                Message.MSG_STATE_SUCCESS, "Tom", "avatar", "Jerry", "avatar",
-                "以后的版本支持链接高亮喔:http://www.kymjs.com支持http、https、svn、ftp开头的链接",
-                true, true, new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 8));
-        Message message2 = new Message(Message.MSG_TYPE_PHOTO,
-                Message.MSG_STATE_SUCCESS, "Tom", "avatar", "Jerry", "avatar",
-                "http://static.oschina.net/uploads/space/2015/0611/103706_rpPc_1157342.png",
-                false, true, new Date(
-                System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 7));
-        Message message6 = new Message(Message.MSG_TYPE_TEXT,
-                Message.MSG_STATE_FAIL, "Tom", "avatar", "Jerry", "avatar",
-                "test send fail", true, false, new Date(
-                System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 6));
-        Message message7 = new Message(Message.MSG_TYPE_TEXT,
-                Message.MSG_STATE_SENDING, "Tom", "avatar", "Jerry", "avatar",
-                "<a href=\"http://kymjs.com\">自定义链接</a>也是支持的", true, true, new Date(System.currentTimeMillis()
-                - (1000 * 60 * 60 * 24) * 6));
+        List<NeoChatHistory> historyList = SaveUtil.selectUser(chatwithWho, 0, 0, 0);
+        if (historyList.size() > 0)
+            for (int i = 0; i < historyList.size(); i++) {
+                MessageChat message = new MessageChat(MessageChat.MSG_TYPE_TEXT, MessageChat.MSG_STATE_SUCCESS, "Tom",
+                        "avatar", "Jerry", "avatar", historyList.get(i).getBody(), historyList.get(i).getIsSend(),
+                        true, transferLongToDate(historyList.get(i).getTime()));
+                datas.add(message);
+            }
 
-        datas.add(message);
-        datas.add(message1);
-        datas.add(message2);
-        datas.add(message6);
-        datas.add(message7);
+//        byte[] emoji = new byte[]{
+//                (byte) 0xF0, (byte) 0x9F, (byte) 0x98, (byte) 0x81
+//        };
+//        MessageChat message = new MessageChat(MessageChat.MSG_TYPE_TEXT,
+//                MessageChat.MSG_STATE_SUCCESS, "\ue415", "avatar", "Jerry", "avatar",
+//                new String(emoji), false, true, new Date(System.currentTimeMillis()
+//                - (1000 * 60 * 60 * 24) * 8));
+//        MessageChat message1 = new MessageChat(MessageChat.MSG_TYPE_TEXT,
+//                MessageChat.MSG_STATE_SUCCESS, "Tom", "avatar", "Jerry", "avatar",
+//                "以后的版本支持链接高亮喔:http://www.kymjs.com支持http、https、svn、ftp开头的链接",
+//                true, true, new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 8));
+//        MessageChat message2 = new MessageChat(MessageChat.MSG_TYPE_PHOTO,
+//                MessageChat.MSG_STATE_SUCCESS, "Tom", "avatar", "Jerry", "avatar",
+//                "http://static.oschina.net/uploads/space/2015/0611/103706_rpPc_1157342.png",
+//                false, true, new Date(
+//                System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 7));
+//        MessageChat message6 = new MessageChat(MessageChat.MSG_TYPE_TEXT,
+//                MessageChat.MSG_STATE_FAIL, "Tom", "avatar", "Jerry", "avatar",
+//                "test send fail", true, false, new Date(
+//                System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 6));
+//        MessageChat message7 = new MessageChat(MessageChat.MSG_TYPE_TEXT,
+//                MessageChat.MSG_STATE_SENDING, "Tom", "avatar", "Jerry", "avatar",
+//                "<a href=\"http://kymjs.com\">自定义链接</a>也是支持的", true, true, new Date(System.currentTimeMillis()
+//                - (1000 * 60 * 60 * 24) * 6));
+//
+//        datas.add(message);
+//        datas.add(message1);
+//        datas.add(message2);
+//        datas.add(message6);
+//        datas.add(message7);
 
         adapter = new ChatAdapter(this, datas, getOnChatItemClickListener());
         mRealListView.setAdapter(adapter);
+        mRealListView.setSelection(adapter.getCount() - 1);
     }
 
-    private void createReplayMsg(Message message) {
-        final Message reMessage = new Message(message.getType(), Message.MSG_STATE_SUCCESS, "Tom",
-                "avatar", "Jerry", "avatar", message.getType() == Message.MSG_TYPE_TEXT ? "返回:"
+    private void createReplayMsg(MessageChat message) {
+        final MessageChat reMessage = new MessageChat(message.getType(), MessageChat.MSG_STATE_SUCCESS, "Tom",
+                "avatar", "Jerry", "avatar", message.getType() == MessageChat.MSG_TYPE_TEXT ? "返回:"
                 + message.getContent() : message.getContent(), false,
                 true, new Date());
         new Thread(new Runnable() {
@@ -282,14 +331,46 @@ public class ChatActivity extends KJActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
-            return;
+        if (requestCode == TAKE_PICTURE) {
+            if (resultCode != Activity.RESULT_OK) {
+                //TODO 此处要将拍到的图片存到聊天数据库
+                /**
+                if (data != null) {
+                    //检查结果是否包含缩略图
+
+                    if s(data.hasExtra("data")) {
+                        Bitmap tempPic = data.getParcelableExtra("data");
+                        ivTakedPic.setImageBitmap(tempPic);
+                        ivTakedPic.setVisibility(View.VISIBLE);
+                    } else {
+                        //如果没有缩略图数据，则说明缩略图存在Uri中
+                        int width = ivTakedPic.getWidth();
+                        int height = ivTakedPic.getHeight();
+                        BitmapFactory.Options factoryOption = new BitmapFactory.Options();
+                        factoryOption.inJustDecodeBounds = true;
+                        BitmapFactory.decodeFile(outputFileUri.getPath(),factoryOption);
+                        int imageWidth = factoryOption.outWidth;
+                        int imageHeight = factoryOption.outHeight;
+                        //确定缩略图大小
+                        int scaleFactor = Math.min(imageWidth/width,imageHeight/height);
+                        //将图像文件解码为图像大小并填充视图
+                        factoryOption.inJustDecodeBounds = false;
+                        factoryOption.inSampleSize = scaleFactor;
+                        factoryOption.inPurgeable = true;
+
+                        Bitmap bitmap = BitmapFactory.decodeFile(outputFileUri.getPath(),factoryOption);
+                        ivTakedPic.setImageBitmap(bitmap);
+                    }
+                }
+                 */
+                return;
+            }
         }
         if (requestCode == REQUEST_CODE_GETIMAGE_BYSDCARD) {
             Uri dataUri = data.getData();
             if (dataUri != null) {
                 File file = FileUtils.uri2File(aty, dataUri);
-                Message message = new Message(Message.MSG_TYPE_PHOTO, Message.MSG_STATE_SUCCESS,
+                MessageChat message = new MessageChat(MessageChat.MSG_TYPE_PHOTO, MessageChat.MSG_STATE_SUCCESS,
                         "Tom", "avatar", "Jerry",
                         "avatar", file.getAbsolutePath(), true, true, new Date());
                 datas.add(message);
@@ -333,6 +414,13 @@ public class ChatActivity extends KJActivity {
             public void onFaceClick(int position) {
             }
         };
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 
     /**
@@ -395,5 +483,50 @@ public class ChatActivity extends KJActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void onEventMainThread(ChatPersonMessageEvent event) {
+
+        if (event.getMessage().getFrom().split("@")[0].equals(chatwithWho.split("@")[0])) {
+            NeoChatHistory hzChatHistory = null;
+            //text消息
+            //Long id, String myJID, String friendJID, Long time, Integer sendState, String body
+//            MessageChat msg = new MessageChat(MessageChat.MSG_TYPE_TEXT, MessageChat.MSG_STATE_SUCCESS, "Tom",
+//                    "avatar", "Jerry", "avatar", "41234", false,
+//                    true, transferLongToDate(hzChatHistory.getTime()));
+            MessageChat message1 = new MessageChat(MessageChat.MSG_TYPE_TEXT,
+                    MessageChat.MSG_STATE_SUCCESS, "Tom", "avatar", "Jerry", "avatar",
+                    event.getMessage().getBody(),
+                    false, true, new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24) * 8));
+            datas.add(message1);
+            adapter.refresh(datas);
+            mRealListView.setSelection(adapter.getCount() - 1);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        chatwithWho = "";
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    /**
+     * 毫秒转成日期
+     */
+    private Date transferLongToDate(Long millSec) {
+        Date date = new Date(millSec);
+        return date;
     }
 }

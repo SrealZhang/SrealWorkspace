@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.activity.chat.UrlUtils;
-import com.app.sample.chatting.bean.Message;
+import com.app.sample.chatting.bean.MessageChat;
 
 import org.kymjs.kjframe.KJBitmap;
 import org.kymjs.kjframe.utils.StringUtils;
@@ -41,21 +41,21 @@ import java.util.List;
 public class ChatAdapter extends BaseAdapter {
 
     private final Context cxt;
-    private List<Message> datas = null;
+    private List<MessageChat> datas = null;
     private KJBitmap kjb;
     private ChatActivity.OnChatItemClickListener listener;
 
-    public ChatAdapter(Context cxt, List<Message> datas, ChatActivity.OnChatItemClickListener listener) {
+    public ChatAdapter(Context cxt, List<MessageChat> datas, ChatActivity.OnChatItemClickListener listener) {
         this.cxt = cxt;
         if (datas == null) {
-            datas = new ArrayList<Message>(0);
+            datas = new ArrayList<MessageChat>(0);
         }
         this.datas = datas;
         kjb = new KJBitmap();
         this.listener = listener;
     }
 
-    public void refresh(List<Message> datas) {
+    public void refresh(List<MessageChat> datas) {
         if (datas == null) {
             datas = new ArrayList<>(0);
         }
@@ -91,7 +91,7 @@ public class ChatAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View v, ViewGroup parent) {
         final ViewHolder holder;
-        final Message data = datas.get(position);
+        final MessageChat data = datas.get(position);
         if (v == null) {
             holder = new ViewHolder();
             if (data.getIsSend()) {
@@ -116,7 +116,7 @@ public class ChatAdapter extends BaseAdapter {
         holder.tv_date.setVisibility(View.VISIBLE);
 
         //如果是文本类型，则隐藏图片，如果是图片则隐藏文本
-        if (data.getType() == Message.MSG_TYPE_TEXT) {
+        if (data.getType() == MessageChat.MSG_TYPE_TEXT) {
             holder.img_chatimage.setVisibility(View.GONE);
             holder.tv_chatcontent.setVisibility(View.VISIBLE);
             if (data.getContent().contains("href")) {
@@ -140,7 +140,7 @@ public class ChatAdapter extends BaseAdapter {
         }
 
         //如果是表情或图片，则不显示气泡，如果是图片则显示气泡
-        if (data.getType() != Message.MSG_TYPE_TEXT) {
+        if (data.getType() != MessageChat.MSG_TYPE_TEXT) {
             holder.layout_content.setBackgroundResource(android.R.color.transparent);
         } else {
             if (data.getIsSend()) {
@@ -168,10 +168,10 @@ public class ChatAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     switch (data.getType()) {
-                        case Message.MSG_TYPE_PHOTO:
+                        case MessageChat.MSG_TYPE_PHOTO:
                             listener.onPhotoClick(position);
                             break;
-                        case Message.MSG_TYPE_FACE:
+                        case MessageChat.MSG_TYPE_FACE:
                             listener.onFaceClick(position);
                             break;
                     }
@@ -181,15 +181,15 @@ public class ChatAdapter extends BaseAdapter {
 
         //消息发送的状态
         switch (data.getState()) {
-            case Message.MSG_STATE_FAIL:
+            case MessageChat.MSG_STATE_FAIL:
                 holder.progress.setVisibility(View.GONE);
                 holder.img_sendfail.setVisibility(View.VISIBLE);
                 break;
-            case Message.MSG_STATE_SUCCESS:
+            case MessageChat.MSG_STATE_SUCCESS:
                 holder.progress.setVisibility(View.GONE);
                 holder.img_sendfail.setVisibility(View.GONE);
                 break;
-            case Message.MSG_STATE_SENDING:
+            case MessageChat.MSG_STATE_SENDING:
                 holder.progress.setVisibility(View.VISIBLE);
                 holder.img_sendfail.setVisibility(View.GONE);
                 break;

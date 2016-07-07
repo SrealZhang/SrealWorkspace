@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -50,7 +51,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-
 repositories {
     maven {
         //引入smack包

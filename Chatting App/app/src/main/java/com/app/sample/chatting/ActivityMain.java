@@ -10,11 +10,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -25,22 +28,38 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.data.Tools;
+import com.app.sample.chatting.event.Event_SureShowNum;
 import com.app.sample.chatting.fragment.ChatsFragment;
 import com.app.sample.chatting.fragment.FragmentAdapter;
 import com.app.sample.chatting.fragment.FriendsFragment;
 import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
+import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 
+import org.greenrobot.greendao.query.QueryBuilder;
 import org.jivesoftware.smack.SmackException;
+
+import java.util.List;
+
+import de.greenrobot.event.EventBus;
+import greendao.NeoContractLately;
 
 public class ActivityMain extends BaseActivity {
     public static final String TAG = "nilaiActivityMain";
+    public static String KEY_FRIEND = "com.app.sample.chatting";
+    // give preparation animation activity transition
+    public static void navigate(AppCompatActivity activity, View transitionImage) {
+        Intent intent = new Intent(activity, ActivityMain.class);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, KEY_FRIEND);
+        ActivityCompat.startActivity(activity, intent, options.toBundle());
+    }
 
     private ActionBarDrawerToggle mDrawerToggle;
     private Toolbar toolbar;
@@ -403,4 +422,40 @@ public class ActivityMain extends BaseActivity {
         doExitApp();
     }
 
+    public void onEventMainThread(Event_SureShowNum event) {
+        if (event.isSuccessful()) {
+//            if (tv_mesNum != null) {
+//                numMessage(tv_mesNum);
+//            }
+        }
+    }
+
+    //消息数量
+    public synchronized void numMessage(TextView tv_mesNum) {
+        int numMessage = 0;
+        //String fromJID, Integer num, long time, String body
+        QueryBuilder<NeoContractLately> qb = MyApplication.getDaoSession().getNeoContractLatelyDao().queryBuilder();
+        List<NeoContractLately> latelies = qb.list();
+        for (int i = 0; i < latelies.size(); i++) {
+            numMessage += latelies.get(i).getNum();
+        }
+        if (numMessage > 0) {
+            tv_mesNum.setVisibility(View.VISIBLE);
+            tv_mesNum.setText(numMessage + "");
+        } else {
+            tv_mesNum.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 }

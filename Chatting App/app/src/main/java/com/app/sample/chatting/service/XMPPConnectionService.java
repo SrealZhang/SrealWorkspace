@@ -8,7 +8,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.data.Constant;
+import com.app.sample.chatting.event.Event_FriendUpdate;
+import com.app.sample.chatting.event.Event_SureChange;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.event.MyChatMessageListener;
 import com.app.sample.chatting.event.TaxiConnectionListener;
@@ -45,6 +48,7 @@ import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 import de.measite.minidns.Client;
+import greendao.NeoUser;
 
 /**
  * Created by neo2 on 2016/7/4.
@@ -208,9 +212,9 @@ public class XMPPConnectionService extends Service {
         } else {
             // Callback to LoginScreen to change the UI to the ChatScreen listview
             Log.e(TAG, "登陆成功");
-            Constant.USERNAME = username;
-            Constant.PASSWORD = password;
+            Constant.USERID = username;
             isConnected = true;
+            MyApplication.getDaoSession().getNeoUserDao().insertOrReplace(new NeoUser(username, password));
             createChatListener();
             EventBus.getDefault().post(new LoggedInEvent(true));
         }
@@ -294,18 +298,21 @@ public class XMPPConnectionService extends Service {
                     public void entriesAdded(Collection<String> arg0) {
                         // TODO Auto-generated method stub
                         Log.d(TAG, "--------EE:" + "entriesAdded");
+                        EventBus.getDefault().post(new Event_FriendUpdate(true));
                     }
 
                     @Override
                     public void entriesDeleted(Collection<String> arg0) {
                         // TODO Auto-generated method stub
                         Log.d(TAG, "--------EE:" + "entriesDeleted");
+                        EventBus.getDefault().post(new Event_FriendUpdate(true));
                     }
 
                     @Override
                     public void entriesUpdated(Collection<String> arg0) {
                         // TODO Auto-generated method stub
                         Log.d(TAG, "--------EE:" + "entriesUpdated");
+                        EventBus.getDefault().post(new Event_FriendUpdate(true));
                     }
 
                     @Override

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.sample.chatting.R;
+import com.app.sample.chatting.bean.MessageChat;
 import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.widget.CircleTransform;
 import com.squareup.picasso.Picasso;
@@ -85,6 +86,14 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
         selectedItems = new SparseBooleanArray();
     }
 
+    public void refresh(List<Chat> items) {
+        if (items == null) {
+            items = new ArrayList<>(0);
+        }
+        this.original_items = items;
+        notifyDataSetChanged();
+    }
+
     @Override
     public ChatsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
@@ -133,6 +142,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
      * Here is the key method to apply the animation
      */
     private int lastPosition = -1;
+
     private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition) {
@@ -159,7 +169,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
         notifyDataSetChanged();
     }
 
-    public void removeSelectedItem(){
+    public void removeSelectedItem() {
         List<Chat> items = getSelectedItems();
         filtered_items.removeAll(items);
     }

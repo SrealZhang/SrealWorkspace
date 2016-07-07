@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
+import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.util.FileSave;
@@ -38,6 +39,14 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     private MyHandler handler = new MyHandler();
 
     private OnItemClickListener mOnItemClickListener;
+
+    public void refresh(ArrayList<Friend> listFriend) {
+        if (listFriend == null) {
+            listFriend = new ArrayList<>(0);
+        }
+        this.original_items = listFriend;
+        notifyDataSetChanged();
+    }
 
     public interface OnItemClickListener {
         void onItemClick(View view, Friend obj, int position);

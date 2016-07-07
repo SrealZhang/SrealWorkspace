@@ -1,10 +1,7 @@
 package com.app.sample.chatting.fragment;
 
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -14,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,17 +20,20 @@ import com.app.sample.chatting.ActivityLogin;
 import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.service.IMContactServiceHelper;
+import com.app.sample.chatting.util.SaveUtil;
 import com.app.sample.chatting.widget.ClearEditText;
 import com.app.sample.chatting.widget.TextURLView;
 
-import java.io.FileNotFoundException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
+import greendao.NeoUser;
 
 
 /**
@@ -69,8 +68,11 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.bind(this, view);
         init();
-        edtAccount.setText("test001");
-        edtPassword.setText("111");
+        List<NeoUser> user = SaveUtil.selectUser();
+        if (user != null && user.size() > 0) {
+            edtAccount.setText(user.get(0).getName());
+            edtPassword.setText(user.get(0).getPassword());
+        }
         return view;
     }
 
@@ -152,12 +154,20 @@ public class LoginFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart");
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
     }
 
     @Override
     public void onStop() {
         EventBus.getDefault().unregister(this);
+        Log.d(TAG, "onStop");
         super.onStop();
     }
 

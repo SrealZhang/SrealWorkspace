@@ -43,7 +43,8 @@
             android:label="登录" />
         <activity
             android:name=".activity.chat.ChatActivity"
-            android:label="聊天" />
+            android:label="聊天"
+            android:theme="@style/AppTheme" />
 
         <service
             android:name=".service.XMPPConnectionService"

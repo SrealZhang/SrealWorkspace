@@ -17,6 +17,7 @@ import com.app.sample.chatting.ActivityLogin;
 import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.widget.ClearEditText;
@@ -102,14 +103,12 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    //注册返回事件
+    //注册、登录返回事件
     public void onEventMainThread(LoggedInEvent event) {
-        if (event.isSuccessful()) {
+        if (event.isSuccessful() && event.getErrorInfo() != null) {
             Log.d(TAG, "Successful ---注册成功");
-            ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
-            ((ActivityLogin) getActivity()).isRegist = false;
-            MyApplication.showToast(event.getErrorInfo());
-        } else {
+            IMContactServiceHelper.getmInstance().loginorRegist(getActivity(), edtUsername.getText().toString(), edtPassword1.getText().toString(), 0);
+        } else if (event.getErrorInfo() != null) {
             Log.d(TAG, "Successful ---注册失败");
             btnSubmit.setClickable(true);
             btnSubmit.setText("注册");
@@ -118,6 +117,14 @@ public class RegisterFragment extends Fragment {
             } else {
                 MyApplication.showToast("聊天服务器注册失败");
                 Log.d(TAG, "聊天服务器注册失败");
+            }
+        } else {
+            if (event.isSuccessful()) {
+                startActivity(new Intent(getActivity(), ActivityMain.class));
+                getActivity().finish();
+            } else {
+                ((ActivityLogin) getActivity()).applyRotation(true, new LoginFragment(), 0, 90);
+                MyApplication.showToast("自动登录失败");
             }
         }
     }

@@ -20,24 +20,28 @@ import java.util.Locale;
 
 public class Constant {
 
-    public static String USERNAME = "未知";// 账户
-    public static String PASSWORD = "null";// 密码
-    public static final String XMPP_HOST = "192.168.0.11";// 主机地址
+    public static String USERID = "未知@192.168.0.6";// 账户
+
+    public static final String XMPP_HOST = "192.168.0.6";// 主机地址
     public static final int XMPP_PORT = 5222;// 端口
-    public static final String XMPP_SEIVICE_NAME = "192.168.0.11";// 服务器名称
+    public static final String XMPP_SEIVICE_NAME = "192.168.0.6";// 服务器名称
+
+
+    public static String getMYDB() {//数据库DB名称
+        return "neodb" + USERID;
+    }
 
     public static final int UPFILE_ING = 1;
     public static final int UPFILE_SUCCES = 2;
     public static final int UPFILE_ERROR = 3;
 
     public static String getMyOpenfireId() {
-        return USERNAME + "@" + XMPP_SEIVICE_NAME;
+        return USERID;
     }
 
     public static Resources getStrRes(Context context) {
         return context.getResources();
     }
-
 
 
     public static String formatTime(long time) {
