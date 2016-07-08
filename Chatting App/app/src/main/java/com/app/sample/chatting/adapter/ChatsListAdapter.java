@@ -59,7 +59,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
         // each data item is just a string in this case
         public TextView title;
         public TextView content;
-        public TextView time;
+        public TextView time, tv_msgnum;
         public ImageView image;
         public LinearLayout lyt_parent;
 
@@ -70,6 +70,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
             time = (TextView) v.findViewById(R.id.time);
             image = (ImageView) v.findViewById(R.id.image);
             lyt_parent = (LinearLayout) v.findViewById(R.id.lyt_parent);
+            tv_msgnum = (TextView) v.findViewById(R.id.tv_msgnum);
         }
 
     }
@@ -109,16 +110,22 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
         final Chat c = filtered_items.get(position);
         holder.title.setText(c.getFriend().getName().split("@")[0]);
 
+        if (c.getFriend().getMsgNum() > 0) {
+            holder.tv_msgnum.setVisibility(View.VISIBLE);
+            holder.tv_msgnum.setText(c.getFriend().getMsgNum() + "");
+        } else {
+            holder.tv_msgnum.setVisibility(View.GONE);
+        }
         holder.time.setText(c.getDate());
         holder.content.setText(c.getSnippet());
-        Picasso.with(ctx).load(c.getFriend().getUserId()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
+//        Picasso.with(ctx).load(c.getFriend().getUserId()).resize(100, 100).transform(new CircleTransform()).into(holder.image);
 
         // Here you apply the animation when the view is bound
         setAnimation(holder.itemView, position);
         holder.lyt_parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mOnItemClickListener != null) {
+                if (mOnItemClickListener!= null) {
                     mOnItemClickListener.onItemClick(view, c, position);
                 }
             }

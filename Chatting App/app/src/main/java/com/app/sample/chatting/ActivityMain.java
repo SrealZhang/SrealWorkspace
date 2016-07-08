@@ -3,7 +3,10 @@ package com.app.sample.chatting;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -27,10 +30,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app.sample.chatting.bean.TabEntity;
+import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.event.Event_SureShowNum;
 import com.app.sample.chatting.fragment.ChatsFragment;
@@ -39,10 +45,19 @@ import com.app.sample.chatting.fragment.FriendsFragment;
 import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
 import com.app.sample.chatting.service.IMContactServiceHelper;
+import com.app.sample.chatting.util.FileSave;
+import com.app.sample.chatting.widget.CircleTransform;
+import com.flyco.tablayout.CommonTabLayout;
+import com.flyco.tablayout.listener.CustomTabEntity;
+import com.flyco.tablayout.listener.OnTabSelectListener;
+import com.flyco.tablayout.widget.MsgView;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 import org.jivesoftware.smack.SmackException;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -51,6 +66,8 @@ import greendao.NeoContractLately;
 public class ActivityMain extends BaseActivity {
     public static final String TAG = "nilaiActivityMain";
     public static String KEY_FRIEND = "com.app.sample.chatting";
+    private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
+    private String[] mTitles = {"friends", "chats", "groups", "neo"};
 
     // give preparation animation activity transition
     public static void navigate(AppCompatActivity activity, View transitionImage) {
@@ -73,14 +90,19 @@ public class ActivityMain extends BaseActivity {
     private GroupsFragment f_groups;
     private NeoFragment f_neo;
     private View parent_view;
+    private TextView tv_userName, tv_userEmail;
+    private ImageView iv_avatar;
 
+    CommonTabLayout tabLayout;
     private String drawerMenuItemTitle;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        for (int i = 0; i < mTitles.length; i++) {
+            mTabEntities.add(new TabEntity(mTitles[i], 0, 0));
+        }
         parent_view = findViewById(R.id.main_content);
         setupDrawerLayout();
         initComponent();
@@ -142,32 +164,37 @@ public class ActivityMain extends BaseActivity {
                 }
             }
         });
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout = (CommonTabLayout) findViewById(R.id.tabs);
+        tabLayout.setTabData(mTabEntities);
+//        tabLayout.showMsg(0, 55);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                closeSearch();
-                viewPager.setCurrentItem(tab.getPosition());
-                switch (tab.getPosition()) {
-                    case 0:
-                        fab.setImageResource(R.drawable.ic_add_friend);
-                        break;
-                    case 1:
-                        fab.setImageResource(R.drawable.ic_create);
-                        break;
-                    case 2:
-                        fab.setImageResource(R.drawable.ic_add_group);
-                        break;
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                tabLayout.setCurrentTab(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        tabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect(int position) {
+                viewPager.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabReselect(int position) {
+                if (position == 0) {
+//                    tabLayout.showMsg(0, mRandom.nextInt(100) + 1);
+//                    UnreadMsgUtils.show(mTabLayout_2.getMsgView(0), mRandom.nextInt(100) + 1);
                 }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
             }
         });
         viewPager.setCurrentItem(1);
@@ -245,9 +272,32 @@ public class ActivityMain extends BaseActivity {
     }
 
     private void setupDrawerLayout() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         NavigationView view = (NavigationView) findViewById(R.id.nav_view);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        View view1 = view.getHeaderView(0);
+        tv_userName = (TextView) view1.findViewById(R.id.tv_userName);
+        tv_userEmail = (TextView) view1.findViewById(R.id.tv_userEmail);
+        iv_avatar = (ImageView) view1.findViewById(R.id.iv_avatar);
+        tv_userName.setText(MyApplication.getUser().getUser());
+        tv_userEmail.setText(MyApplication.getUser().getUser() + "@" + Constant.XMPP_HOST);
+        final File f = new File(FileSave.Second_PATH + MyApplication.getUser().getUser() + "@" + Constant.XMPP_HOST + ".jpg");
+        if (f.exists())
+            Picasso.with(this).load(f).resize(100, 100).transform(new CircleTransform()).into(iv_avatar);
+        else {
+            MyApplication.getmInstance().runThread(new Thread() {
+                @Override
+                public void run() {
+                    IMContactServiceHelper.getmInstance().getUserImage(MyApplication.getUser().getUser() + "@" + Constant.XMPP_HOST);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Picasso.with(ActivityMain.this).load(f).resize(100, 100).transform(new CircleTransform()).into(iv_avatar);
+                        }
+                    });
+                }
+            });
+        }
+
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(final MenuItem menuItem) {
@@ -422,14 +472,12 @@ public class ActivityMain extends BaseActivity {
 
     public void onEventMainThread(Event_SureShowNum event) {
         if (event.isSuccessful()) {
-//            if (tv_mesNum != null) {
-//                numMessage(tv_mesNum);
-//            }
+            numMessage();
         }
     }
 
     //消息数量
-    public synchronized void numMessage(TextView tv_mesNum) {
+    public synchronized void numMessage() {
         int numMessage = 0;
         //String fromJID, Integer num, long time, String body
         QueryBuilder<NeoContractLately> qb = MyApplication.getDaoSession().getNeoContractLatelyDao().queryBuilder();
@@ -438,10 +486,17 @@ public class ActivityMain extends BaseActivity {
             numMessage += latelies.get(i).getNum();
         }
         if (numMessage > 0) {
-            tv_mesNum.setVisibility(View.VISIBLE);
-            tv_mesNum.setText(numMessage + "");
+            if (tabLayout != null) {
+                tabLayout.showMsg(1, numMessage);
+                tabLayout.setMsgMargin(1, numMessage > 99 ? -20 : (numMessage > 9 ? -10 : 0), 5);
+//                MsgView rtv_2_3 = tabLayout.getMsgView(1);
+//                if (rtv_2_3 != null) {
+//                    rtv_2_3.setBackgroundColor(Color.parseColor("#6D8FB0"));
+//                }
+            }
         } else {
-            tv_mesNum.setVisibility(View.GONE);
+            if (tabLayout != null)
+                tabLayout.hideMsg(1);
         }
     }
 
@@ -449,6 +504,12 @@ public class ActivityMain extends BaseActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        numMessage();
     }
 
     @Override

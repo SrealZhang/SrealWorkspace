@@ -16,22 +16,29 @@
 package com.app.sample.chatting.activity.chat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -47,7 +54,6 @@ import com.app.sample.chatting.data.emoji.DisplayRules;
 import com.app.sample.chatting.event.chat.ChatPersonMessageEvent;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.XMPPConnectionService;
-import com.app.sample.chatting.util.ToastUtil;
 import com.app.sample.chatting.util.SaveUtil;
 import com.app.sample.chatting.widget.KJChatKeyboard;
 
@@ -61,6 +67,7 @@ import org.kymjs.kjframe.utils.FileUtils;
 import org.kymjs.kjframe.utils.KJLoger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +89,7 @@ public class ChatActivity extends KJActivity {
     public static String KEY_SNIPPET = "com.app.sample.chatting.SNIPPET";
     public final Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     public static String chatwithWho = "";
+    private View parent_view;
 
     public Uri outputFileUri;
     @BindView(R.id.iv_takedPic)
@@ -93,6 +101,7 @@ public class ChatActivity extends KJActivity {
         intent.putExtra(KEY_FRIEND, obj);
         intent.putExtra(KEY_SNIPPET, snippet);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, KEY_FRIEND);
+        SaveUtil.getDelete(obj.getUserId());
         ActivityCompat.startActivity(activity, intent, options.toBundle());
     }
 
@@ -107,6 +116,10 @@ public class ChatActivity extends KJActivity {
     @Override
     public void setRootView() {
         setContentView(R.layout.activity_chat);
+        parent_view = findViewById(android.R.id.content);
+
+        // animation transition
+        ViewCompat.setTransitionName(parent_view, KEY_FRIEND);
         // initialize conversation data
         Intent intent = getIntent();
         friend = (Friend) intent.getExtras().getSerializable(KEY_FRIEND);
@@ -135,7 +148,7 @@ public class ChatActivity extends KJActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle(friend.getName().split("@")[0]);
+        actionBar.setTitle(!TextUtils.isEmpty(friend.getName())?friend.getName():friend.getUserId().split("@")[0]);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
     }
 
@@ -199,15 +212,7 @@ public class ChatActivity extends KJActivity {
                         goToAlbum();
                         break;
                     case 1:
-                        ToastUtil.toast("跳转到相机");
-                        //创建输出文件
-                        File file = new File(Environment.getExternalStorageDirectory(), "temp.jpg");
-                        outputFileUri = Uri.fromFile(file);
-                        //生成intent
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-                        //启动摄像头应用程序
-                        startActivityForResult(intent, TAKE_PICTURE);
+                        goToCamera();
                         break;
                 }
             }
@@ -229,6 +234,8 @@ public class ChatActivity extends KJActivity {
         box.setFaceData(faceCagegory);
         mRealListView.setOnTouchListener(getOnTouchListener());
     }
+
+
 
     private void initListView() {
         List<NeoChatHistory> historyList = SaveUtil.selectUser(chatwithWho, 0, 0, 0);
@@ -273,7 +280,13 @@ public class ChatActivity extends KJActivity {
 
         adapter = new ChatAdapter(this, datas, getOnChatItemClickListener());
         mRealListView.setAdapter(adapter);
-        mRealListView.setSelection(adapter.getCount() - 1);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mRealListView.setSelection(adapter.getCount() - 1);
+            }
+        },450);
+        mRealListView.requestFocus();
     }
 
     private void createReplayMsg(MessageChat message) {
@@ -331,20 +344,73 @@ public class ChatActivity extends KJActivity {
 
     }
 
+    private void goToCamera() {
+
+        File file = null;
+        try {
+            file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"temp.jpg");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        Uri uri = Uri.fromFile(file);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.Images.Media.ORIENTATION,0);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+        this.startActivityForResult(intent,TAKE_PICTURE);
+
+
+        /*//创建输出文件
+        File file = new File(Environment.getExternalStorageDirectory(), "temp.jpg");
+        outputFileUri = Uri.fromFile(file);
+        //生成intent
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+        //启动摄像头应用程序
+        startActivityForResult(intent, TAKE_PICTURE);*/
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_PICTURE) {
             if (resultCode != Activity.RESULT_OK) {
                 //TODO 此处要将拍到的图片存到聊天数据库
-                /**
-                if (data != null) {
+
+
+                File  bb=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"temp.jpg");
+
+                Intent i=new Intent("com.android.camera.action.CROP");
+                i.setType("image/*");
+
+
+                //i.putExtra("data", bb);
+                i.setDataAndType(Uri.fromFile(bb), "image/jpeg");
+
+                i.putExtra("crop", "true");
+
+                i.putExtra("aspectX", 1);
+
+                i.putExtra("aspectY", 1);
+
+                i.putExtra("outputX", 500);
+
+                i.putExtra("outputY", 500);
+
+                i.putExtra("return-data", true);
+
+                this.startActivityForResult(i, 7);  
+
+
+
+
+                /*if (data != null) {
                     //检查结果是否包含缩略图
 
-                    if s(data.hasExtra("data")) {
+                    if (data.hasExtra("data")) {
                         Bitmap tempPic = data.getParcelableExtra("data");
-                        ivTakedPic.setImageBitmap(tempPic);
                         ivTakedPic.setVisibility(View.VISIBLE);
+                        ivTakedPic.setImageBitmap(tempPic);
                     } else {
                         //如果没有缩略图数据，则说明缩略图存在Uri中
                         int width = ivTakedPic.getWidth();
@@ -364,8 +430,7 @@ public class ChatActivity extends KJActivity {
                         Bitmap bitmap = BitmapFactory.decodeFile(outputFileUri.getPath(),factoryOption);
                         ivTakedPic.setImageBitmap(bitmap);
                     }
-                }
-                 */
+                }*/
                 return;
             }
         }

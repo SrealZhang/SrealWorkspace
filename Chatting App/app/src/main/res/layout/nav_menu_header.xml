@@ -9,7 +9,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/avatar"
+        android:id="@+id/iv_avatar"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="@dimen/spacing_large"
@@ -17,16 +17,17 @@
         android:src="@drawable/profile" />
 
     <TextView
+        android:id="@+id/tv_userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/email"
+        android:layout_above="@+id/tv_userEmail"
         android:layout_marginLeft="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_large"
         android:text="Username"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <TextView
-        android:id="@+id/email"
+        android:id="@+id/tv_userEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

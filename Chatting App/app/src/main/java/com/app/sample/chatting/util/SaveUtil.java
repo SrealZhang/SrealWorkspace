@@ -63,8 +63,16 @@ public class SaveUtil {
     }
 
     //删除最近消息
-    public static void getDelete(NeoContractLately hzContractLately) {
-        getNeoContractLatelyDao().delete(hzContractLately);
+    public static void getDelete(String friendJID) {
+        QueryBuilder<NeoContractLately> qb = getNeoContractLatelyDao().queryBuilder();
+        qb.where(NeoContractLatelyDao.Properties.FriendJID.eq(friendJID));
+        NeoContractLately entity;
+        if (qb.count() > 0) {
+            entity=qb.list().get(0);
+            //String friendJID, String friendName, String myJID, Integer num, long time, String body
+            getNeoContractLatelyDao().update(new NeoContractLately(entity.getFriendJID(),entity.getFriendName(),entity.getMyJID(),0,entity.getTime(),entity.getBody()));
+            EventBus.getDefault().post(new Event_SureChange(true));
+        }
     }
 
     //查询单聊历史记录

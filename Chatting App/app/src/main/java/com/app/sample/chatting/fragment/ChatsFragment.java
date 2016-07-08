@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.app.sample.chatting.ActivityChatDetails;
 import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
@@ -178,7 +179,7 @@ public class ChatsFragment extends Fragment {
         items.clear();
         for (int i = 0; i < mList.size(); i++) {
             //long id, String date, boolean read, Friend friend, String snippet
-            items.add(new Chat(i, DateUtil.long2Date(mList.get(i).getTime()), true, new Friend(mList.get(i).getFriendName(), mList.get(i).getFriendJID()), mList.get(i).getBody()));
+            items.add(new Chat(i, DateUtil.long2Date(mList.get(i).getTime()), true, new Friend(1, mList.get(i).getFriendName(), mList.get(i).getFriendJID(), mList.get(i).getNum()), mList.get(i).getBody()));
         }
         mAdapter.refresh(items);
         EventBus.getDefault().post(new Event_SureShowNum(true));

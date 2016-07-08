@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,6 @@ import android.widget.TextView;
 
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
-import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.util.FileSave;
@@ -40,14 +40,6 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     private OnItemClickListener mOnItemClickListener;
 
-    public void refresh(ArrayList<Friend> listFriend) {
-        if (listFriend == null) {
-            listFriend = new ArrayList<>(0);
-        }
-        this.original_items = listFriend;
-        notifyDataSetChanged();
-    }
-
     public interface OnItemClickListener {
         void onItemClick(View view, Friend obj, int position);
     }
@@ -61,6 +53,14 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         original_items = items;
         filtered_items = items;
         ctx = context;
+    }
+
+    public void refresh(List<Friend> items) {
+        if (items == null) {
+            items = new ArrayList<>(0);
+        }
+        this.original_items = items;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -98,7 +98,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         loadIconPosition = position;
         final Friend c = filtered_items.get(position);
-        holder.name.setText(c.getName());
+        holder.name.setText(TextUtils.isEmpty(c.getName()) ? c.getUserId().split("@")[0] : c.getName());
         final File f = new File(FileSave.Second_PATH + c.getUserId() + ".jpg");
         Log.d("nilai图片名称", FileSave.Second_PATH + c.getUserId());
         if (f.exists())
@@ -113,6 +113,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                     handler.sendMessage(message);
                 }
             });
+        }else {
+            holder.image.setImageResource(R.drawable.unknown_avatar);
         }
         // Here you apply the animation when the view is bound
         setAnimation(holder.itemView, position);
@@ -194,4 +196,6 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             }
         }
     }
+
+
 }

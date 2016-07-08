@@ -105,6 +105,7 @@ public class IMContactServiceHelper {
      * @return List(RosterEntry)
      */
     public List<Friend> getAllFriends() {
+        if (getmConnection() == null) return new ArrayList<>();
         Roster roster = Roster.getInstanceFor(getmConnection());
         List<Friend> EntriesList = new ArrayList<Friend>();
         Collection<RosterEntry> rosterEntry = roster.getEntries();

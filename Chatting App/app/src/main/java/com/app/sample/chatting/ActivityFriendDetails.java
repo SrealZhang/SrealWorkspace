@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +58,7 @@ public class ActivityFriendDetails extends BaseActivity {
 
         friend = (Friend) getIntent().getSerializableExtra(EXTRA_OBJCT);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(friend.getName());
+        collapsingToolbarLayout.setTitle(!TextUtils.isEmpty(friend.getName())?friend.getName():friend.getUserId().split("@")[0]);
 
 //        ((ImageView) findViewById(R.id.image)).setImageResource(friend.getUserId());
         Picasso.with(this).load(new File(FileSave.Second_PATH + friend.getUserId() + ".jpg")).into((ImageView) findViewById(R.id.image));

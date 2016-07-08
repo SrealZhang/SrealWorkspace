@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,13 @@ import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.adapter.FriendsListAdapter;
 import com.app.sample.chatting.event.Event_FriendUpdate;
+import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.widget.DividerItemDecoration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,6 +32,7 @@ public class FriendsFragment extends Fragment {
     public FriendsListAdapter mAdapter;
     private ProgressBar progressBar;
     View view;
+    List<Friend> friendList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -41,9 +47,9 @@ public class FriendsFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-
         // specify an adapter (see also next example)
-        mAdapter = new FriendsListAdapter(getActivity(), IMContactServiceHelper.getmInstance().getAllFriends());
+        friendList = IMContactServiceHelper.getmInstance().getAllFriends();
+        mAdapter = new FriendsListAdapter(getActivity(), friendList);
         recyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new FriendsListAdapter.OnItemClickListener() {
             @Override
@@ -52,7 +58,6 @@ public class FriendsFragment extends Fragment {
                 ActivityFriendDetails.navigate((ActivityMain) getActivity(), v.findViewById(R.id.image), obj);
             }
         });
-
         return view;
     }
 
@@ -63,14 +68,10 @@ public class FriendsFragment extends Fragment {
 
     //获取整个表的数据集合
     public synchronized void getUpdate() {
-        mAdapter = new FriendsListAdapter(getActivity(), IMContactServiceHelper.getmInstance().getAllFriends());
-        recyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(new FriendsListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, Friend obj, int position) {
-                ActivityFriendDetails.navigate((ActivityMain) getActivity(), v.findViewById(R.id.image), obj);
-            }
-        });
+        friendList = IMContactServiceHelper.getmInstance().getAllFriends();
+        mAdapter.refresh(friendList);
+        Log.d("NILAI", "更新了friend列表");
+//        mAdapter.refresh();
     }
 
     public void onEventMainThread(Event_FriendUpdate event) {
@@ -83,12 +84,12 @@ public class FriendsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        getUpdate();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getUpdate();
     }
 
     @Override
