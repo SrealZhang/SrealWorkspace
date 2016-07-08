@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.Log;
 
+import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.model.ChatsDetails;
@@ -28,8 +29,10 @@ public class Constant {
 
 
     public static String getMYDB() {//数据库DB名称
-        return "neodb" + USERID;
+        return "neodb" + MyApplication.getUser().getUser();
     }
+
+    public static String userSPE = "userSharedPreferences";
 
     public static final int UPFILE_ING = 1;
     public static final int UPFILE_SUCCES = 2;

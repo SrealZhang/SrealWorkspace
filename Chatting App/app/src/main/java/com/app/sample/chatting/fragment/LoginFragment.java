@@ -20,7 +20,7 @@ import com.app.sample.chatting.ActivityLogin;
 import com.app.sample.chatting.ActivityMain;
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
-import com.app.sample.chatting.data.Constant;
+import com.app.sample.chatting.bean.NeoUser;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 import com.app.sample.chatting.util.SaveUtil;
@@ -33,7 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
-import greendao.NeoUser;
 
 
 /**
@@ -68,10 +67,10 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.bind(this, view);
         init();
-        List<NeoUser> user = SaveUtil.selectUser();
-        if (user != null && user.size() > 0) {
-            edtAccount.setText(user.get(0).getName());
-            edtPassword.setText(user.get(0).getPassword());
+        NeoUser user = MyApplication.getUser();
+        if (!TextUtils.isEmpty(user.getUser())) {
+            edtAccount.setText(user.getUser());
+            edtPassword.setText(user.getPassword()+"");
         }
         return view;
     }

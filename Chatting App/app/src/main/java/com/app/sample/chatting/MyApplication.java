@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.app.sample.chatting.bean.NeoUser;
 import com.app.sample.chatting.data.Constant;
 
 import java.util.LinkedList;
@@ -31,6 +33,12 @@ public class MyApplication extends Application {
     private static DaoMaster daoMaster;
     private static DaoSession daoSession;
     public static SQLiteDatabase db;
+
+    public static NeoUser user;
+
+    public static NeoUser getUser() {
+        return user == null ? selectUserTxt() : user;
+    }
 
     public static synchronized MyApplication getmInstance() {
         if (mInstance == null) {
@@ -91,6 +99,17 @@ public class MyApplication extends Application {
                 activity.finish();
             }
         }
+        clearDate();
+    }
+
+    public static void clearDate() {
+        daoMaster = null;
+        daoSession = null;
+        db = null;
+        user = null;
+        SharedPreferences.Editor editor = mContext.getSharedPreferences(Constant.userSPE, Activity.MODE_PRIVATE).edit();
+        editor.putString("password", "");
+        editor.commit();
     }
 
     @SuppressLint("InlinedApi")
@@ -134,6 +153,19 @@ public class MyApplication extends Application {
             daoSession = daoMaster.newSession();
         }
         return daoSession;
+    }
+
+    public static void insertUserTxt(String user, String password) {
+        SharedPreferences.Editor editor = mContext.getSharedPreferences(Constant.userSPE, Activity.MODE_PRIVATE).edit();
+        editor.putString("user", user);
+        editor.putString("password", password);
+        editor.commit();
+    }
+
+    public static NeoUser selectUserTxt() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constant.userSPE, Activity.MODE_PRIVATE);
+        NeoUser neoUser = new NeoUser(sharedPreferences.getString("user", ""), sharedPreferences.getString("password", ""));
+        return neoUser;
     }
 
     ExecutorService cachedThreadPool = Executors.newCachedThreadPool();

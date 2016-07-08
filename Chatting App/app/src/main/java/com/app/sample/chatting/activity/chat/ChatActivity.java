@@ -42,6 +42,7 @@ import com.app.sample.chatting.bean.Emojicon;
 import com.app.sample.chatting.bean.Faceicon;
 import com.app.sample.chatting.bean.MessageChat;
 import com.app.sample.chatting.data.Constant;
+import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.data.emoji.DisplayRules;
 import com.app.sample.chatting.event.chat.ChatPersonMessageEvent;
 import com.app.sample.chatting.model.Friend;
@@ -113,6 +114,8 @@ public class ChatActivity extends KJActivity {
         chatOfFriend = createChat(friend.getUserId());
         chatwithWho = friend.getUserId();
         initToolbar();
+        // for system bar in lollipop
+        Tools.systemBarLolipop(this);
     }
 
     @Override
@@ -132,7 +135,7 @@ public class ChatActivity extends KJActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle(friend.getName());
+        actionBar.setTitle(friend.getName().split("@")[0]);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
     }
 
@@ -154,9 +157,9 @@ public class ChatActivity extends KJActivity {
                     e.printStackTrace();
                     MyApplication.showToast("发送失败");
                 }
-                //Long id, String myJID, String friendJID, Long time, Integer sendState, String body
                 NeoChatHistory hzChatHistory = new NeoChatHistory(
                         null, Constant.getMyOpenfireId(), chatwithWho, System.currentTimeMillis(), 1, content, true);
+                //Long id, String myJID, String friendJID, Long time, Integer sendState, String body
 
                 MessageChat message = new MessageChat(MessageChat.MSG_TYPE_TEXT, MessageChat.MSG_STATE_SUCCESS,
                         "Tom", "avatar", "Jerry",

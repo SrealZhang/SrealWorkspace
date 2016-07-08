@@ -2,11 +2,13 @@ package com.app.sample.chatting;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.TextView;
 
+import com.app.sample.chatting.bean.NeoUser;
 import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.service.IMContactServiceHelper;
@@ -17,7 +19,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.greenrobot.event.EventBus;
-import greendao.NeoUser;
 
 public class ActivitySplash extends BaseActivity {
     private static final String TAG = "nilaiActivitySplash";
@@ -31,9 +32,9 @@ public class ActivitySplash extends BaseActivity {
             @Override
             public void run() {
                 Intent i = null;
-                List<NeoUser> user = SaveUtil.selectUser();
-                if (user.size() > 0) {
-                    IMContactServiceHelper.getmInstance().loginorRegist(ActivitySplash.this, user.get(0).getName(), user.get(0).getPassword(), 0);
+                NeoUser user = MyApplication.getUser();
+                if (!TextUtils.isEmpty(user.getUser())&&!TextUtils.isEmpty(user.getPassword())) {
+                    IMContactServiceHelper.getmInstance().loginorRegist(ActivitySplash.this, user.getUser(), user.getPassword(), 0);
                 } else {
                     i = new Intent(ActivitySplash.this, ActivityLogin.class);
                     startActivity(i);

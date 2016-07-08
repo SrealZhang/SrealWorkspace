@@ -44,7 +44,8 @@
         <activity
             android:name=".activity.chat.ChatActivity"
             android:label="聊天"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <service
             android:name=".service.XMPPConnectionService"

@@ -1,11 +1,8 @@
 package com.app.sample.chatting.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,27 +12,14 @@ import android.widget.ProgressBar;
 
 import com.app.sample.chatting.ActivityFriendDetails;
 import com.app.sample.chatting.ActivityMain;
-import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.adapter.FriendsListAdapter;
-import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.Event_FriendUpdate;
-import com.app.sample.chatting.event.Event_SureChange;
-import com.app.sample.chatting.event.Event_SureShowNum;
-import com.app.sample.chatting.model.Chat;
 import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
-import com.app.sample.chatting.util.DateUtil;
 import com.app.sample.chatting.widget.DividerItemDecoration;
 
-import org.greenrobot.greendao.query.QueryBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
-import greendao.NeoContractLately;
-import greendao.NeoContractLatelyDao;
 
 public class FriendsFragment extends Fragment {
 

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.activity.chat.ChatActivity;
+import com.app.sample.chatting.bean.NeoUser;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.chat.ChatPersonMessageEvent;
 import com.app.sample.chatting.event.Event_SureChange;
@@ -19,8 +20,6 @@ import greendao.NeoChatHistory;
 import greendao.NeoChatHistoryDao;
 import greendao.NeoContractLately;
 import greendao.NeoContractLatelyDao;
-import greendao.NeoUser;
-import greendao.NeoUserDao;
 
 /**
  * Created by Yangbin on 2016/3/16.
@@ -119,20 +118,10 @@ public class SaveUtil {
         return listAdapter;
     }
 
-    //查询账号
-    public static List<NeoUser> selectUser() {
-        QueryBuilder<NeoUser> qb = getNeoUserDao().queryBuilder();
-        return qb.list();
-    }
 
     private static NeoChatHistoryDao getNeoChatHistoryDao() {
         // 通过 BaseApplication 类提供的 getDaoSession() 获取具体 Dao
         return MyApplication.getDaoSession().getNeoChatHistoryDao();
-    }
-
-    private static NeoUserDao getNeoUserDao() {
-        // 通过 BaseApplication 类提供的 getDaoSession() 获取具体 Dao
-        return MyApplication.getDaoSession().getNeoUserDao();
     }
 
     private static NeoContractLatelyDao getNeoContractLatelyDao() {

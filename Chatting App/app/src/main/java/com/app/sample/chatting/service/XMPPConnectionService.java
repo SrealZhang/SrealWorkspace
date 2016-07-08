@@ -9,9 +9,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.app.sample.chatting.MyApplication;
+import com.app.sample.chatting.bean.NeoUser;
 import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.Event_FriendUpdate;
-import com.app.sample.chatting.event.Event_SureChange;
 import com.app.sample.chatting.event.LoggedInEvent;
 import com.app.sample.chatting.event.MyChatMessageListener;
 import com.app.sample.chatting.event.TaxiConnectionListener;
@@ -28,7 +28,6 @@ import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -47,8 +46,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.greenrobot.event.EventBus;
-import de.measite.minidns.Client;
-import greendao.NeoUser;
 
 /**
  * Created by neo2 on 2016/7/4.
@@ -213,8 +210,9 @@ public class XMPPConnectionService extends Service {
             // Callback to LoginScreen to change the UI to the ChatScreen listview
             Log.e(TAG, "登陆成功");
             Constant.USERID = username;
+            MyApplication.clearDate();
             isConnected = true;
-            MyApplication.getDaoSession().getNeoUserDao().insertOrReplace(new NeoUser(username, password));
+            MyApplication.insertUserTxt(username, password);
             createChatListener();
             EventBus.getDefault().post(new LoggedInEvent(true));
         }

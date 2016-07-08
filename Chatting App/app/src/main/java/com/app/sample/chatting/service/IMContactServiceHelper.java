@@ -2,8 +2,6 @@ package com.app.sample.chatting.service;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,12 +15,9 @@ import com.app.sample.chatting.util.FileSave;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -34,15 +29,11 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -85,10 +76,7 @@ public class IMContactServiceHelper {
                 protected Void doInBackground(Void... params) {
                     getmConnection().disconnect();
                     Log.e(TAG, "Connection disconnected");
-                    MyApplication.finishActivityNokill();
-                    Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    context.startActivity(intent);
+                    MyApplication.restartApp(context);
                     return null;
                 }
             }.execute();
@@ -360,7 +348,7 @@ public class IMContactServiceHelper {
 
         try {
             Roster roster = Roster.getInstanceFor(getmConnection());
-            roster.createEntry(friendName.trim() + "@"+ Constant.XMPP_HOST, name, new String[]{"Friends"});
+            roster.createEntry(friendName.trim() + "@" + Constant.XMPP_HOST, name, new String[]{"Friends"});
             MyApplication.showToast("添加好友成功！！");
             return true;
         } catch (XMPPException e) {

@@ -8,11 +8,9 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
-import greendao.NeoUser;
 import greendao.NeoChatHistory;
 import greendao.NeoContractLately;
 
-import greendao.NeoUserDao;
 import greendao.NeoChatHistoryDao;
 import greendao.NeoContractLatelyDao;
 
@@ -25,11 +23,9 @@ import greendao.NeoContractLatelyDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
-    private final DaoConfig neoUserDaoConfig;
     private final DaoConfig neoChatHistoryDaoConfig;
     private final DaoConfig neoContractLatelyDaoConfig;
 
-    private final NeoUserDao neoUserDao;
     private final NeoChatHistoryDao neoChatHistoryDao;
     private final NeoContractLatelyDao neoContractLatelyDao;
 
@@ -37,32 +33,22 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
-        neoUserDaoConfig = daoConfigMap.get(NeoUserDao.class).clone();
-        neoUserDaoConfig.initIdentityScope(type);
-
         neoChatHistoryDaoConfig = daoConfigMap.get(NeoChatHistoryDao.class).clone();
         neoChatHistoryDaoConfig.initIdentityScope(type);
 
         neoContractLatelyDaoConfig = daoConfigMap.get(NeoContractLatelyDao.class).clone();
         neoContractLatelyDaoConfig.initIdentityScope(type);
 
-        neoUserDao = new NeoUserDao(neoUserDaoConfig, this);
         neoChatHistoryDao = new NeoChatHistoryDao(neoChatHistoryDaoConfig, this);
         neoContractLatelyDao = new NeoContractLatelyDao(neoContractLatelyDaoConfig, this);
 
-        registerDao(NeoUser.class, neoUserDao);
         registerDao(NeoChatHistory.class, neoChatHistoryDao);
         registerDao(NeoContractLately.class, neoContractLatelyDao);
     }
     
     public void clear() {
-        neoUserDaoConfig.getIdentityScope().clear();
         neoChatHistoryDaoConfig.getIdentityScope().clear();
         neoContractLatelyDaoConfig.getIdentityScope().clear();
-    }
-
-    public NeoUserDao getNeoUserDao() {
-        return neoUserDao;
     }
 
     public NeoChatHistoryDao getNeoChatHistoryDao() {

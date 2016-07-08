@@ -107,7 +107,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<ChatsListAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Chat c = filtered_items.get(position);
-        holder.title.setText(c.getFriend().getName());
+        holder.title.setText(c.getFriend().getName().split("@")[0]);
 
         holder.time.setText(c.getDate());
         holder.content.setText(c.getSnippet());

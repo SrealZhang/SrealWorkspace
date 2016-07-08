@@ -22,7 +22,6 @@ import com.app.sample.chatting.MyApplication;
 import com.app.sample.chatting.R;
 import com.app.sample.chatting.activity.chat.ChatActivity;
 import com.app.sample.chatting.adapter.ChatsListAdapter;
-import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.event.Event_SureShowNum;
 import com.app.sample.chatting.event.Event_SureChange;
 import com.app.sample.chatting.model.Chat;
@@ -68,7 +67,7 @@ public class ChatsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
-        items = Constant.getChatsData(getActivity());
+        items = new ArrayList<>();
 
         // specify an adapter (see also next example)
         mAdapter = new ChatsListAdapter(getActivity(), items);

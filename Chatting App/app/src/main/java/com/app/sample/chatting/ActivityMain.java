@@ -31,8 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.app.sample.chatting.activity.chat.ChatActivity;
-import com.app.sample.chatting.data.Constant;
 import com.app.sample.chatting.data.Tools;
 import com.app.sample.chatting.event.Event_SureShowNum;
 import com.app.sample.chatting.fragment.ChatsFragment;
@@ -40,7 +38,6 @@ import com.app.sample.chatting.fragment.FragmentAdapter;
 import com.app.sample.chatting.fragment.FriendsFragment;
 import com.app.sample.chatting.fragment.GroupsFragment;
 import com.app.sample.chatting.fragment.NeoFragment;
-import com.app.sample.chatting.model.Friend;
 import com.app.sample.chatting.service.IMContactServiceHelper;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -54,6 +51,7 @@ import greendao.NeoContractLately;
 public class ActivityMain extends BaseActivity {
     public static final String TAG = "nilaiActivityMain";
     public static String KEY_FRIEND = "com.app.sample.chatting";
+
     // give preparation animation activity transition
     public static void navigate(AppCompatActivity activity, View transitionImage) {
         Intent intent = new Intent(activity, ActivityMain.class);
@@ -457,5 +455,10 @@ public class ActivityMain extends BaseActivity {
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

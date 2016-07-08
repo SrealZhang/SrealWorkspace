@@ -1,7 +1,5 @@
 package com.app.sample.chatting.event.chat;
 
-import com.app.sample.chatting.model.Friend;
-
 import org.jivesoftware.smack.packet.Message;
 
 import greendao.NeoChatHistory;
